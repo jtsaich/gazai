@@ -1,17 +1,14 @@
 import NextAuth from 'next-auth';
-import GitHub from 'next-auth/providers/github';
+import Google from 'next-auth/providers/google';
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import prisma from '../lib/prisma';
 
 export const {
   handlers: { GET, POST },
   auth
 } = NextAuth({
-  providers: [
-    GitHub({
-      clientId: process.env.OAUTH_CLIENT_KEY as string,
-      clientSecret: process.env.OAUTH_CLIENT_SECRET as string
-    })
-  ],
-  pages: {
-    signIn: '/sign-in'
-  }
+  // debug: process.env.NODE_ENV !== 'production',
+  providers: [Google],
+  adapter: PrismaAdapter(prisma)
+  // callbacks: {}
 });
