@@ -17,9 +17,9 @@ export default async function IndexPage({
 }) {
   const search = searchParams.q ?? '';
   const result = await sql`
-    SELECT id, name, username, email 
-    FROM users 
-    WHERE name ILIKE ${'%' + search + '%'};
+    SELECT Id, Name, Email
+    FROM User
+    WHERE Name ILIKE ${'%' + search + '%'};
   `;
   const users = result.rows as User[];
 
