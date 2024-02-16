@@ -4,10 +4,9 @@ import Search from './search';
 import UsersTable from './table';
 
 interface User {
-  id: number;
-  name: string;
-  username: string;
-  email: string;
+  Id: number;
+  Name: string;
+  Email: string;
 }
 
 export default async function IndexPage({
