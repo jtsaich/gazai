@@ -9,7 +9,9 @@ function DrawerSide() {
 
   return (
     <div className="p-10">
-      <h2 className="text-2xl font-bold">GAZAI.ai (alpha)</h2>
+      <Link href="/">
+        <h2 className="text-2xl font-bold">GAZAI.ai (alpha)</h2>
+      </Link>
       <ul className="menu w-full min-h-full text-base-content">
         {/* Sidebar content here */}
         <li>

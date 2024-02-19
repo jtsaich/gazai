@@ -10,12 +10,12 @@ const getUsers = cache(async () => {
 export default async function TextToImage() {
   const session = await auth();
   if (!session?.user) {
-    return <div>Please login first</div>;
+    return <div className="p-10">Please login first</div>;
   }
 
   const user: SessionUserWithRole = session.user;
   if (user.role !== 'ADMIN') {
-    return <div>Access Denied</div>;
+    return <div className="p-10">Access Denied</div>;
   }
 
   const users = await getUsers();
