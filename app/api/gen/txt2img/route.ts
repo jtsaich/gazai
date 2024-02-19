@@ -3,8 +3,9 @@ function get_random_seed() {
 }
 
 export async function POST(request: Request) {
-  const { prompt, negativePrompt, height, width } = await request.json();
-  let { seed } = await request.json();
+  const requestBody = await request.json();
+  const { prompt, negativePrompt, height, width } = requestBody;
+  let { seed } = requestBody;
 
   if (seed === undefined || seed === -1) {
     seed = get_random_seed();
@@ -22,6 +23,7 @@ export async function POST(request: Request) {
     seed: seed,
     cfg_scale: 7
   };
+
   const res = await fetch(`${process.env.SD_API_HOST}/sdapi/v1/txt2img`, {
     method: 'POST',
     headers: {

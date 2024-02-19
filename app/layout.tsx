@@ -1,5 +1,5 @@
 import './globals.css';
-import DrawerSide from '../components/drawerSide';
+import DrawerSide from './components/drawerSide';
 
 export const metadata = {
   title: 'Next.js App Router + NextAuth + Tailwind CSS',
