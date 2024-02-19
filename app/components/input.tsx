@@ -1,33 +1,28 @@
-import { InputHTMLAttributes } from 'react';
-import { FieldValues, Path, UseFormRegister } from 'react-hook-form';
+import React, { ForwardedRef, InputHTMLAttributes } from 'react';
 
-interface InputProps<T extends FieldValues>
-  extends InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
-  name: Path<T>;
-  register: UseFormRegister<T>;
 }
 
-const Input = <T extends FieldValues>({
-  label,
-  name,
-  register,
-  ...rest
-}: InputProps<T>) => (
-  <label className="form-control w-full max-w-xs">
-    {label && (
-      <div className="label">
-        <span className="label-text">{label}</span>
-      </div>
-    )}
-    <input
-      type="text"
-      placeholder="Type here"
-      className="input input-bordered w-full max-w-xs"
-      {...register(name)}
-      {...rest}
-    />
-  </label>
+const Input = React.forwardRef(
+  ({ label, ...rest }: InputProps, ref: ForwardedRef<HTMLInputElement>) => (
+    <label className="form-control w-full max-w-xs">
+      {label && (
+        <div className="label">
+          <span className="label-text">{label}</span>
+        </div>
+      )}
+      <input
+        ref={ref}
+        type="text"
+        placeholder="Type here"
+        className="input input-bordered w-full max-w-xs"
+        {...rest}
+      />
+    </label>
+  )
 );
+
+Input.displayName = 'Input';
 
 export default Input;

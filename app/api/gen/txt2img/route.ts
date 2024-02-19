@@ -4,7 +4,7 @@ function get_random_seed() {
 
 export async function POST(request: Request) {
   const requestBody = await request.json();
-  const { prompt, negativePrompt, height, width } = requestBody;
+  const { prompt, negativePrompt, height, width, cfgScale } = requestBody;
   let { seed } = requestBody;
 
   if (seed === undefined || seed === -1) {
@@ -14,14 +14,14 @@ export async function POST(request: Request) {
   const payload = {
     prompt: prompt,
     negative_prompt: negativePrompt,
-    height: 512,
-    width: 512,
+    height: height,
+    width: width,
     n_iter: 1,
     sampler_name: 'DPM++ SDE Karras',
     batch_size: 2,
     steps: 20,
     seed: seed,
-    cfg_scale: 7
+    cfg_scale: cfgScale
   };
 
   const res = await fetch(`${process.env.SD_API_HOST}/sdapi/v1/txt2img`, {

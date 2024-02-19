@@ -1,4 +1,3 @@
-import { User } from 'next-auth';
 import { auth } from '../../auth';
 import TextToImageForm from '../components/textToImageForm';
 import { SessionUserWithRole } from '../types';
