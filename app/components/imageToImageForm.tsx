@@ -44,19 +44,18 @@ function ImageToImageForm() {
 
   const onSubmit = async (data: FormValues) => {
     let prompt = '';
-    // try {
-    //   const response = await axios.post('/api/translate', {
-    //     text: data.prompt
-    //   });
-    //   const { text } = response.data;
-    //   prompt += text;
-    // } catch (error) {
-    //   console.error(error);
-    // }
+    try {
+      const response = await axios.post('/api/translate', {
+        text: data.prompt
+      });
+      const { text } = response.data;
+      prompt += text;
+    } catch (error) {
+      console.error(error);
+    }
 
     const promptPrefix = data.loraSelections.map((lora) => lora.id).join('');
     prompt = promptPrefix + data.prompt;
-    // prompt = promptPrefix + prompt;
 
     const payload = {
       prompt,
@@ -80,17 +79,14 @@ function ImageToImageForm() {
         url = '/api/gen/coloring_ctrlnet';
     }
 
-    console.debug(url, payload);
     try {
-      const response = await axios.post('/api/gen/txt2img', payload);
+      const response = await axios.post(url, payload);
       const { images } = response.data;
       setImages(images);
     } catch (error) {
       console.error(error);
     }
   };
-
-  console.debug(getValues('inputImage'));
 
   return (
     <div>
@@ -104,16 +100,6 @@ function ImageToImageForm() {
           control={control}
           name="inputImage"
         />
-        <a
-          href={
-            getValues('inputImage')
-              ? `data:image/png;base64,${getValues('inputImage')}`
-              : ''
-          }
-          download="generated_image.png"
-        >
-          Download Image
-        </a>
         <div className="flex-1 grid grid-cols-2 gap-4">
           {images.map((base64, i) => (
             <div key={`generated-${i}`}>
