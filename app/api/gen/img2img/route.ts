@@ -2,7 +2,15 @@ import { get_random_seed } from '../../../helpers';
 
 export async function POST(request: Request) {
   const requestBody = await request.json();
-  const { prompt, negativePrompt, height, width, cfgScale } = requestBody;
+  const {
+    prompt,
+    negativePrompt,
+    height,
+    width,
+    cfgScale,
+    inputImage,
+    denoisingStrength
+  } = requestBody;
   let { seed } = requestBody;
 
   if (seed === undefined || seed === -1) {
@@ -19,10 +27,12 @@ export async function POST(request: Request) {
     batch_size: 2,
     steps: 20,
     seed: seed,
-    cfg_scale: cfgScale
+    cfg_scale: cfgScale,
+    init_images: [inputImage],
+    denoising_strength: denoisingStrength
   };
 
-  const res = await fetch(`${process.env.SD_API_HOST}/sdapi/v1/txt2img`, {
+  const res = await fetch(`${process.env.SD_API_HOST}/sdapi/v1/img2img`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

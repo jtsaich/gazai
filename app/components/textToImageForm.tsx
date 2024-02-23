@@ -121,10 +121,6 @@ function TextToImageForm() {
               </Listbox>
             </label>
           )}
-          // transform={{
-          //   input: (value) => {},
-          //   output: (e) => {}
-          // }}
           control={control}
           name="loraSelections"
         />
