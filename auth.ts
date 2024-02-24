@@ -1,7 +1,10 @@
 import NextAuth from 'next-auth';
-import Google from 'next-auth/providers/google';
-import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import prisma from './lib/prisma';
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import prisma from '@/lib/prisma';
+import { getUserById } from '@/data/user';
+import authConfig from './auth.config';
+import { getTwoFactorConfirmationByUserId } from './data/two-factor-confirmation';
+import { getAccountByUserId } from './data/account';
 
 export const {
   handlers: { GET, POST },
@@ -10,16 +13,84 @@ export const {
   signOut
 } = NextAuth({
   // debug: process.env.NODE_ENV !== 'production',
-  providers: [Google],
-  adapter: PrismaAdapter(prisma),
-  callbacks: {
-    session({ session, user }) {
-      if (!session?.user) {
-        return session;
-      }
-      // @ts-ignore
-      session.user.role = user.role;
-      return session;
+  pages: {
+    signIn: '/auth/login',
+    error: '/auth/error'
+  },
+  events: {
+    async linkAccount({ user }) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { emailVerified: new Date() }
+      });
     }
-  }
+  },
+  callbacks: {
+    async signIn({ user, account }) {
+      // Allow OAuth without email verification
+      if (account?.provider !== 'credentials') return true;
+
+      const existingUser = user.id && (await getUserById(user.id));
+      if (!existingUser) return false;
+
+      // Prevent sign in without email verification
+      if (!existingUser?.emailVerified) return false;
+
+      if (existingUser.isTwoFactorEnabled) {
+        const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(
+          existingUser.id
+        );
+
+        if (!twoFactorConfirmation) return false;
+
+        // Delete two factor confirmation for next sign in
+        await prisma.twoFactorConfirmation.delete({
+          where: { id: twoFactorConfirmation.id }
+        });
+      }
+
+      return true;
+    },
+
+    async session({ token, session }) {
+      if (token.sub && session.user) {
+        session.user.id = token.sub;
+      }
+
+      if (token.role && session.user) {
+        session.user.role = token.role;
+      }
+
+      if (session.user) {
+        session.user.isOAuth = token.isOAuth;
+        session.user.isTwoFactorEnabled = token.isTwoFactorEnabled;
+        session.user.name = token.name;
+        session.user.email = token.email;
+      }
+
+      return session;
+    },
+
+    async jwt({ token }) {
+      if (!token.sub) return token;
+
+      const existingUser = await getUserById(token.sub);
+
+      if (!existingUser) return token;
+
+      const existingAccount = await getAccountByUserId(existingUser.id);
+
+      token.isOAuth = !!existingAccount;
+      token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
+      token.name = existingUser.name;
+      token.email = existingUser.email;
+      token.role = existingUser.role;
+
+      return token;
+    }
+  },
+  adapter: PrismaAdapter(prisma),
+  session: { strategy: 'jwt' },
+  basePath: '/api/auth',
+  ...authConfig
 });

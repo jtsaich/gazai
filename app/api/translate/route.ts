@@ -1,6 +1,7 @@
 import * as deepl from 'deepl-node';
 
-const translator = new deepl.Translator(process.env.DEEPL_AUTH_KEY!);
+const authKey = process.env.DEEPL_AUTH_KEY || 'xxx';
+const translator = new deepl.Translator(authKey);
 
 export async function POST(request: Request) {
   const { text } = await request.json();

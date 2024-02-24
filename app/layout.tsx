@@ -1,5 +1,4 @@
 import './globals.css';
-import DrawerSide from './components/drawerSide';
 
 export const metadata = {
   title: 'GAZAI.ai (alpha)',
@@ -13,15 +12,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" data-theme="light">
-      <body className="h-full">
-        <div className="drawer md:drawer-open">
-          <input type="checkbox" className="drawer-toggle" />
-          <div className="drawer-content">{children}</div>
-          <div className="drawer-side bg-base-200">
-            <DrawerSide />
-          </div>
-        </div>
-      </body>
+      <body className="h-full">{children}</body>
     </html>
   );
 }

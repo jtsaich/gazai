@@ -3,6 +3,8 @@
 import clsx from 'clsx';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import LogoutButton from './auth/logout-button';
+import { ArrowLeftOnRectangleIcon } from '@heroicons/react/20/solid';
 
 function DrawerSide() {
   const pathname = usePathname();
@@ -31,6 +33,12 @@ function DrawerSide() {
           >
             Text to image
           </Link>
+        </li>
+        <li>
+          <LogoutButton>
+            <ArrowLeftOnRectangleIcon className="h-4 w-4 mr-2" />
+            Logout
+          </LogoutButton>
         </li>
       </ul>
     </div>

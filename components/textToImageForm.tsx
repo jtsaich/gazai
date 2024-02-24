@@ -5,10 +5,10 @@ import { Controller, useForm } from 'react-hook-form';
 import axios from 'axios';
 import clsx from 'clsx';
 import { Listbox } from '@headlessui/react';
-import Input from './input';
-import Select from './select';
-import Range from './range';
-import { LoRAs } from '../constants';
+import Input from './form/input';
+import Select from './form/select';
+import Range from './form/range';
+import { LoRAs } from '../app/constants';
 
 interface FormValues {
   prompt: string;

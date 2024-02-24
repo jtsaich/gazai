@@ -1,6 +1,6 @@
 'use client';
 
-import { setAsAdmin } from '../actions';
+import { setAsAdmin } from '@/actions/admin';
 
 function SetAsAdminButton({ userId }: { userId: string }) {
   return (

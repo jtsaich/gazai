@@ -5,10 +5,10 @@ import axios from 'axios';
 import clsx from 'clsx';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { LoRAs } from '../constants';
-import Select from './select';
-import Input from './input';
-import Range from './range';
+import { LoRAs } from '../app/constants';
+import Select from './form/select';
+import Input from './form/input';
+import Range from './form/range';
 import DrawingCanvas from './drawingCanvas';
 
 interface FormValues {

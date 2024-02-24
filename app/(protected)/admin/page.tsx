@@ -1,19 +1,19 @@
 import { cache } from 'react';
-import { auth } from '../../auth';
-import SetAsAdminButton from '../components/setAsAdminButton';
-import { SessionUserWithRole, UserWithRole } from '../types';
+import { auth } from '../../../auth';
+import SetAsAdminButton from '../../../components/setAsAdminButton';
+import prisma from '@/lib/prisma';
 
 const getUsers = cache(async () => {
   const users = await prisma.user.findMany();
   return users;
 });
-export default async function TextToImage() {
+export default async function Admin() {
   const session = await auth();
   if (!session?.user) {
     return <div className="p-10">Please login first</div>;
   }
 
-  const user: SessionUserWithRole = session.user;
+  const user = session.user;
   if (user.role !== 'ADMIN') {
     return <div className="p-10">Access Denied</div>;
   }
@@ -32,7 +32,7 @@ export default async function TextToImage() {
             </tr>
           </thead>
           <tbody>
-            {users.map((user: UserWithRole) => (
+            {users.map((user) => (
               <tr key={user.id}>
                 <td>{user.name}</td>
                 <td>{user.email}</td>
