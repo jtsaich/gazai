@@ -3,6 +3,7 @@ import { get_random_seed } from '../../../helpers';
 export async function POST(request: Request) {
   const requestBody = await request.json();
   const {
+    batchSize,
     prompt,
     negativePrompt,
     height,
@@ -21,7 +22,7 @@ export async function POST(request: Request) {
   const resize_mode = 2;
 
   const payload = {
-    batch_size: 2,
+    batch_size: batchSize,
     cfg_scale: cfgScale,
     denoising_strength: denoisingStrength,
     height: height,

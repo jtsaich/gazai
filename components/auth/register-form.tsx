@@ -62,7 +62,7 @@ const RegisterForm = () => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col gap-y-6"
         >
-          <div className="gap-y-4">
+          <div className="flex flex-col gap-y-4">
             <Input
               label="Name"
               disabled={isPending}
@@ -104,16 +104,6 @@ const RegisterForm = () => {
             Register
           </button>
         </form>
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t"></span>
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-base-100 px-2">Or continue with</span>
-          </div>
-        </div>
-
-        <Social />
       </div>
     </div>
   );

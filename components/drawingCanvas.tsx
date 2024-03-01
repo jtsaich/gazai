@@ -32,6 +32,27 @@ function DrawingCanvas({
     if (myp5.current) return;
 
     const s = (p: p5Exposed) => {
+      const baseWidth = 600;
+      const baseHeight = 600;
+      const aspectRatio = baseWidth / baseHeight;
+      let scaleFactor = 1;
+
+      const updateCanvasDimensions = () => {
+        const containerWidth = container.current!.clientWidth;
+        // const containerHeight = container.current!.clientHeight;
+        // if (containerWidth / containerHeight > aspectRatio) {
+        //   return {
+        //     canvasWidth: containerHeight * aspectRatio,
+        //     canvasHeight: containerHeight
+        //   };
+        // }
+
+        return {
+          canvasWidth: containerWidth,
+          canvasHeight: containerWidth / aspectRatio
+        };
+      };
+
       p.draw = function () {
         p.noFill();
 
@@ -65,8 +86,21 @@ function DrawingCanvas({
         paths.current.push(currentPath.current);
       };
 
+      p.windowResized = () => {
+        p.setup();
+      };
+
       p.setup = function () {
-        p.createCanvas(600, 600);
+        const { canvasWidth, canvasHeight } = updateCanvasDimensions();
+        const myCanvas = p.createCanvas(canvasWidth, canvasHeight);
+        scaleFactor = baseWidth / canvasWidth;
+
+        // const x = (p.windowWidth - canvasWidth) / 2;
+        // const y = (p.windowHeight - canvasHeight) / 2;
+        // myCanvas.position(x, y);
+
+        p.pixelDensity(window.devicePixelRatio);
+        p.strokeWeight(2 * scaleFactor);
         p.background(255);
       };
     };
@@ -74,7 +108,7 @@ function DrawingCanvas({
   });
 
   return (
-    <div className="flex flex-row">
+    <div className="min-w-0 flex flex-row">
       <div>
         <ul>
           <li className="flex flex-col">
@@ -118,7 +152,10 @@ function DrawingCanvas({
           </li>
         </ul>
       </div>
-      <div ref={container} className="border border-black border-solid"></div>
+      <div
+        ref={container}
+        className="flex-1 min-w-0 border border-black border-solid"
+      ></div>
     </div>
   );
 }

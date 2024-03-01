@@ -1,5 +1,5 @@
 import LogoutButton from '@/components/auth/logout-button';
-import { auth, signIn, signOut } from '../auth';
+import { auth, signIn, signOut } from '../../auth';
 import { ArrowLeftOnRectangleIcon } from '@heroicons/react/20/solid';
 
 export default async function IndexPage() {
