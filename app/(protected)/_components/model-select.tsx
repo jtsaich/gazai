@@ -13,10 +13,7 @@ export default function ModelSelect({
       <Listbox
         defaultValue={value}
         by={(a, b) => a.id === b.id}
-        onChange={(e) => {
-          console.log(e);
-          onChange(e);
-        }}
+        onChange={onChange}
         multiple
       >
         <div className="label">

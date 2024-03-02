@@ -1,30 +1,25 @@
 import LogoutButton from '@/components/auth/logout-button';
-import { auth, signIn, signOut } from '../../auth';
 import { ArrowLeftOnRectangleIcon } from '@heroicons/react/20/solid';
 
-export default async function IndexPage() {
-  // const session = await auth();
-  // if (!session?.user) {
-  //   return (
-  //     <main className="p-10">
-  //       <form
-  //         action={async () => {
-  //           'use server';
-  //           await signIn('google');
-  //         }}
-  //       >
-  //         <button className="btn btn-primary">Sign in with Google</button>
-  //       </form>
-  //     </main>
-  //   );
-  // }
+import Link from 'next/link';
 
+export default async function IndexPage() {
   return (
     <main className="p-10">
-      <LogoutButton>
-        <ArrowLeftOnRectangleIcon className="h-4 w-4 mr-2" />
-        Logout
-      </LogoutButton>
+      <h1 className="text-4xl font-bold mb-4">Start making art!</h1>
+
+      <div className="flex overflow-hidden rounded-md gap-4">
+        <Link className="btn btn-primary" href="/text-to-image">
+          Image Generation
+        </Link>
+        <Link className="btn btn-primary" href="/sketch-to-image">
+          Magic Paint
+        </Link>
+        <LogoutButton>
+          <ArrowLeftOnRectangleIcon className="h-4 w-4 mr-2" />
+          Logout
+        </LogoutButton>
+      </div>
     </main>
   );
 }
