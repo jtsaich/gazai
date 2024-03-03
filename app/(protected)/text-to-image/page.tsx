@@ -16,15 +16,12 @@ import Select from '@/components/form/select';
 import Input from '@/components/form/input';
 import NumberOfImages from '../_components/number-of-images';
 import ModelSelect from '../_components/model-select';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { TextToImageSchema } from '@/schemas';
+import * as z from 'zod';
 
-export interface TextToImageFormValues {
-  batchSize: number;
-  prompt: string;
-  negativePrompt: string;
-  outputImageSize: string;
-  cfgScale: number;
-  loraSelections: { name: string; id: string }[];
-}
+type TextToImageFormValues = z.infer<typeof TextToImageSchema>;
 
 export default function TextToImage() {
   const [images, setImages] = useState<string[]>([]);
@@ -39,37 +36,34 @@ export default function TextToImage() {
       prompt: 'A female elf with golden crown',
       negativePrompt:
         '(((3d))), easynegative, ((((ugly)))), (((duplicate))), ((morbid)), ((mutilated)), [out of frame], extra fingers, mutated hands, ((poorly drawn hands)), ((poorly drawn face)), (((mutation))), (((deformed))), blurry, ((bad anatomy)), (((bad proportions))), ((extra limbs)), cloned face, (((disfigured))), gross proportions, (malformed limbs), ((missing arms)), ((missing legs)), (((extra arms))), (((extra legs))), (fused fingers), (too many fingers), (((long neck)))',
-      outputImageSize: '1024',
+      width: 1024,
+      height: 1024,
       cfgScale: 7,
       loraSelections: [LoRAs[0], LoRAs[1]]
-    }
+    },
+    resolver: zodResolver(TextToImageSchema)
   });
 
   const onSubmit = async (data: TextToImageFormValues) => {
-    // console.debug(data);
-    // return;
-
-    let prompt = '';
-    try {
-      const response = await axios.post('/api/translate', {
-        text: data.prompt
-      });
-      const { text } = response.data;
-      prompt += text;
-    } catch (error) {
-      console.error(error);
+    let prompt = data.prompt;
+    if (Boolean(process.env.NEXT_PUBLIC_ENABLE_TRANSLATION)) {
+      try {
+        const response = await axios.post('/api/translate', {
+          text: data.prompt
+        });
+        const { text } = response.data;
+        prompt = text;
+      } catch (error) {
+        console.error(error);
+      }
     }
 
     const promptPrefix = data.loraSelections.map((lora) => lora.id).join('');
     prompt = promptPrefix + prompt;
 
-    const payload = {
-      prompt,
-      negativePrompt: data.negativePrompt,
-      height: data.outputImageSize,
-      width: data.outputImageSize,
-      cfgScale: data.cfgScale,
-      batchSize: data.batchSize
+    const { loraSelections, ...payload } = {
+      ...data,
+      prompt
     };
 
     console.debug('/api/gen/txt2img', payload);
@@ -113,7 +107,7 @@ export default function TextToImage() {
                 { label: '768', value: '768' },
                 { label: '512', value: '512' }
               ]}
-              {...register('outputImageSize')}
+              {...register('width', { valueAsNumber: true })}
             />
 
             <Range
@@ -144,25 +138,35 @@ export default function TextToImage() {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={80} className="h-screen">
-          <main className="flex flex-col h-full w-full p-10">
-            <div className="flex flex-col gap-4 pb-4">
-              <Input label="Prompt" {...register('prompt')} />
-              <button className="btn btn-primary max-w-xs">
-                Generate random prompt
-              </button>
-              <Input label="Negative prompt" {...register('negativePrompt')} />
-            </div>
-            <div className="grid grid-cols-4 gap-4">
-              {images.map((base64, i) => (
-                <div key={`generated-${i}`}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`data:image/png;base64,${base64}`}
-                    alt={`generated image ${i}`}
+          <main className="flex flex-col h-full w-full">
+            <ScrollArea>
+              <div className="p-10">
+                <div className="flex flex-col gap-4 pb-4">
+                  <Input label="Prompt" {...register('prompt')} />
+                  <button className="btn btn-primary max-w-xs">
+                    Generate random prompt
+                  </button>
+                  <Input
+                    label="Negative prompt"
+                    {...register('negativePrompt')}
                   />
                 </div>
-              ))}
-            </div>
+
+                <span>Generation history</span>
+                <div className="grid grid-cols-4 gap-4">
+                  {images.map((base64, i) => (
+                    <div key={`generated-${i}`}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={`data:image/png;base64,${base64}`}
+                        alt={`generated image ${i}`}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div className=""></div>
+              </div>
+            </ScrollArea>
           </main>
         </ResizablePanel>
       </ResizablePanelGroup>

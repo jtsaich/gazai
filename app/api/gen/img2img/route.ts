@@ -1,5 +1,8 @@
 import { get_random_seed } from '../../../helpers';
 
+// testing
+import SDResponse from '@/mocks/SDResponse.json';
+
 export async function POST(request: Request) {
   const requestBody = await request.json();
   const {
@@ -32,6 +35,10 @@ export async function POST(request: Request) {
     init_images: [inputImage],
     denoising_strength: denoisingStrength
   };
+
+  if (process.env.ENABLE_MOCK_SD_RESPONSE) {
+    return Response.json(SDResponse);
+  }
 
   const res = await fetch(`${process.env.SD_API_HOST}/sdapi/v1/img2img`, {
     method: 'POST',

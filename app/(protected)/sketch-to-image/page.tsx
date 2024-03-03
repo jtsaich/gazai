@@ -17,18 +17,12 @@ import {
 import NumberOfImages from '../_components/number-of-images';
 import ModelSelect from '../_components/model-select';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SketchToImageSchema } from '@/schemas';
+import * as z from 'zod';
 
-interface SketchToImageFormValues {
-  batchSize: number;
-  prompt: string;
-  negativePrompt: string;
-  outputImageSize: string;
-  inference: string;
-  cfgScale: number;
-  denoisingStrength: number;
-  loraSelections: { name: string; id: string }[];
-  inputImage: string;
-}
+type SketchToImageFormValues = z.infer<typeof SketchToImageSchema>;
+
 export default function SketchToImage() {
   const [images, setImages] = useState([]);
   const {
@@ -42,45 +36,40 @@ export default function SketchToImage() {
       prompt: 'A female elf with golden crown',
       negativePrompt:
         '(((3d))), easynegative, ((((ugly)))), (((duplicate))), ((morbid)), ((mutilated)), [out of frame], extra fingers, mutated hands, ((poorly drawn hands)), ((poorly drawn face)), (((mutation))), (((deformed))), blurry, ((bad anatomy)), (((bad proportions))), ((extra limbs)), cloned face, (((disfigured))), gross proportions, (malformed limbs), ((missing arms)), ((missing legs)), (((extra arms))), (((extra legs))), (fused fingers), (too many fingers), (((long neck)))',
-      outputImageSize: '1024',
+      width: 1024,
+      height: 1024,
       inference: 'i2i',
       cfgScale: 7,
       denoisingStrength: 0.75,
       loraSelections: [LoRAs[0], LoRAs[1]]
-    }
+    },
+    resolver: zodResolver(SketchToImageSchema)
   });
 
   const onSubmit = async (data: SketchToImageFormValues) => {
-    // console.debug(data);
-    // return;
-
-    let prompt = '';
-    try {
-      const response = await axios.post('/api/translate', {
-        text: data.prompt
-      });
-      const { text } = response.data;
-      prompt += text;
-    } catch (error) {
-      console.error(error);
+    let prompt = data.prompt;
+    if (Boolean(process.env.NEXT_PUBLIC_ENABLE_TRANSLATION)) {
+      try {
+        const response = await axios.post('/api/translate', {
+          text: data.prompt
+        });
+        const { text } = response.data;
+        prompt += text;
+      } catch (error) {
+        console.error(error);
+      }
     }
 
     const promptPrefix = data.loraSelections.map((lora) => lora.id).join('');
     prompt = promptPrefix + data.prompt;
 
-    const payload = {
-      prompt,
-      negativePrompt: data.negativePrompt,
-      height: data.outputImageSize,
-      width: data.outputImageSize,
-      cfgScale: data.cfgScale,
-      batchSize: data.batchSize,
-      denoisingStrength: data.denoisingStrength,
-      inputImage: data.inputImage
+    const { loraSelections, inference, ...payload } = {
+      ...data,
+      prompt
     };
 
     let url = '';
-    switch (data.inference) {
+    switch (inference) {
       case 'i2i':
         url = '/api/gen/img2img';
         break;
@@ -141,7 +130,7 @@ export default function SketchToImage() {
                 { label: '768', value: '768' },
                 { label: '512', value: '512' }
               ]}
-              {...register('outputImageSize')}
+              {...register('width', { valueAsNumber: true })}
             />
 
             <Range
@@ -182,37 +171,39 @@ export default function SketchToImage() {
         <ResizablePanel defaultSize={80} className="h-screen">
           <main className="flex flex-col h-full w-full">
             <ScrollArea className="p-10">
-              <div className="flex flex-col gap-4 pb-4">
-                <Input label="Prompt" {...register('prompt')} />
-                <button className="btn btn-primary max-w-xs">
-                  Generate random prompt
-                </button>
-                <Input
-                  label="Negative prompt"
-                  {...register('negativePrompt')}
-                />
-              </div>
+              <div className="p-10">
+                <div className="flex flex-col gap-4 pb-4">
+                  <Input label="Prompt" {...register('prompt')} />
+                  <button className="btn btn-primary max-w-xs">
+                    Generate random prompt
+                  </button>
+                  <Input
+                    label="Negative prompt"
+                    {...register('negativePrompt')}
+                  />
+                </div>
 
-              <div className="grid grid-cols-2">
-                <Controller
-                  render={({ field }) => (
-                    <DrawingCanvas
-                      setCanvasOutput={(dataUrl) => field.onChange(dataUrl)}
-                    />
-                  )}
-                  control={control}
-                  name="inputImage"
-                />
-                <div className="grid grid-cols-2 gap-4">
-                  {images.map((base64, i) => (
-                    <div key={`generated-${i}`}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={`data:image/png;base64,${base64}`}
-                        alt={`generated image ${i}`}
+                <div className="grid grid-cols-2">
+                  <Controller
+                    render={({ field }) => (
+                      <DrawingCanvas
+                        setCanvasOutput={(dataUrl) => field.onChange(dataUrl)}
                       />
-                    </div>
-                  ))}
+                    )}
+                    control={control}
+                    name="inputImage"
+                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    {images.map((base64, i) => (
+                      <div key={`generated-${i}`}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={`data:image/png;base64,${base64}`}
+                          alt={`generated image ${i}`}
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </ScrollArea>

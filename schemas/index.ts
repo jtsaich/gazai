@@ -109,3 +109,58 @@ export const RegisterSchema = z
     message: 'Passwords do not match.',
     path: ['passwordConfirmation']
   });
+
+export const UserPromptHistorySchema = z.object({
+  type: z.enum(['txt2img', 'img2img', 'txt2img-scribble', 'coloring']),
+  batchSize: z.number(),
+  prompt: z.string(),
+  negativePrompt: z.string(),
+  width: z.number(),
+  height: z.number(),
+  nIter: z.number(),
+  steps: z.number(),
+  seed: z.number(),
+  samplerName: z.string(),
+  cfgScale: z.number(),
+  denoisingStrength: z.optional(z.number()),
+  iniImages: z.optional(z.array(z.string())),
+  controlMode: z.optional(z.number()),
+  resizeMode: z.optional(z.number()),
+  created: z.optional(z.date())
+});
+
+const literalSchema = z.union([z.string(), z.number(), z.boolean(), z.null()]);
+type Literal = z.infer<typeof literalSchema>;
+type Json = Literal | { [key: string]: Json } | Json[];
+const jsonSchema: z.ZodType<Json> = z.lazy(() =>
+  z.union([literalSchema, z.array(jsonSchema), z.record(jsonSchema)])
+);
+
+export const UserPromptResultSchema = z.object({
+  images: z.array(z.string()),
+  parameters: jsonSchema,
+  info: z.string()
+});
+
+export const TextToImageSchema = z.object({
+  batchSize: z.number(),
+  prompt: z.string(),
+  negativePrompt: z.string(),
+  width: z.number(),
+  height: z.number(),
+  cfgScale: z.number(),
+  loraSelections: z.array(z.object({ id: z.string(), name: z.string() }))
+});
+
+export const SketchToImageSchema = z.object({
+  batchSize: z.number(),
+  prompt: z.string(),
+  negativePrompt: z.string(),
+  width: z.number(),
+  height: z.number(),
+  cfgScale: z.number(),
+  denoisingStrength: z.optional(z.number()),
+  inference: z.enum(['i2i', 't2i-scribble', 'coloring']),
+  inputImage: z.optional(z.array(z.string())),
+  loraSelections: z.array(z.object({ id: z.string(), name: z.string() }))
+});

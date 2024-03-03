@@ -1,6 +1,9 @@
 import { get_random_seed } from '../../../helpers';
 
 export async function POST(request: Request) {
+  const session = await getSession();
+  const user = session?.user;
+
   const requestBody = await request.json();
   const {
     batchSize,
@@ -55,6 +58,10 @@ export async function POST(request: Request) {
       }
     }
   };
+
+  if (process.env.ENABLE_MOCK_SD_RESPONSE) {
+    return Response.json(SDResponse);
+  }
 
   const res = await fetch(`${process.env.SD_API_HOST}/sdapi/v1/txt2img`, {
     method: 'POST',
