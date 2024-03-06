@@ -117,7 +117,7 @@ model UserPromptHistory {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  UserPromptResult UserPromptResult?
+  userPromptResult UserPromptResult?
 }
 
 model UserPromptResult {
@@ -126,6 +126,8 @@ model UserPromptResult {
   images              String[]
   parameters          Json
   info                String
+
+  createdAt DateTime @default(now())
 
   userPromptHistory UserPromptHistory @relation(fields: [userPromptHistoryId], references: [id])
 

@@ -19,12 +19,13 @@ import ModelSelect from '../_components/model-select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { TextToImageSchema } from '@/schemas';
-import * as z from 'zod';
-
-type TextToImageFormValues = z.infer<typeof TextToImageSchema>;
-
+import { TextToImageFormValues, BetterUserPromptResult } from '../_types';
+import GenerationHistory from '../_components/generation-history';
+import { Separator } from '@/components/ui/separator';
 export default function TextToImage() {
-  const [images, setImages] = useState<string[]>([]);
+  const [generationHistory, setGenerationHistory] = useState<
+    BetterUserPromptResult[]
+  >([]);
   const {
     control,
     handleSubmit,
@@ -45,6 +46,7 @@ export default function TextToImage() {
   });
 
   const onSubmit = async (data: TextToImageFormValues) => {
+    console.log('onSubmit', data);
     let prompt = data.prompt;
     if (Boolean(process.env.NEXT_PUBLIC_ENABLE_TRANSLATION)) {
       try {
@@ -69,8 +71,8 @@ export default function TextToImage() {
     console.debug('/api/gen/txt2img', payload);
     try {
       const response = await axios.post('/api/gen/txt2img', payload);
-      const { images } = response.data;
-      setImages(images);
+      const data: BetterUserPromptResult = response.data;
+      setGenerationHistory([data, ...generationHistory]);
     } catch (error) {
       console.error(error);
     }
@@ -83,10 +85,12 @@ export default function TextToImage() {
           <div className="flex flex-col h-full w-full p-10">
             <Controller
               render={({ field }) => (
-                <NumberOfImages
-                  value={String(field.value)}
-                  onChange={field.onChange}
-                />
+                <>
+                  <NumberOfImages
+                    value={Number(field.value)}
+                    onChange={field.onChange}
+                  />
+                </>
               )}
               control={control}
               name="batchSize"
@@ -152,19 +156,23 @@ export default function TextToImage() {
                   />
                 </div>
 
-                <span>Generation history</span>
-                <div className="grid grid-cols-4 gap-4">
-                  {images.map((base64, i) => (
-                    <div key={`generated-${i}`}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={`data:image/png;base64,${base64}`}
-                        alt={`generated image ${i}`}
-                      />
+                <span></span>
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <h2 className="text-2xl font-semibold tracking-tight">
+                      Generation history
+                    </h2>
+                  </div>
+                </div>
+                <Separator className="my-4" />
+                <div className="flex flex-col gap-y-4">
+                  {generationHistory.map((history, i) => (
+                    <div key={i}>
+                      <GenerationHistory history={history} />
+                      <Separator className="my-4" />
                     </div>
                   ))}
                 </div>
-                <div className=""></div>
               </div>
             </ScrollArea>
           </main>

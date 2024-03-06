@@ -1,7 +1,7 @@
 import { get_random_seed } from '../../../helpers';
 
 // testing
-import SDResponse from '@/mocks/SDResponse.json';
+import SDResponse from '@/mocks/SDResponse';
 
 export async function POST(request: Request) {
   const requestBody = await request.json();

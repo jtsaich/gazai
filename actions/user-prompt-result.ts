@@ -10,7 +10,10 @@ import { auth } from '@/auth';
 import { userPromptHistoryData } from './user-prompt-history';
 
 export const createUserPromptResultWithHistory = async (
-  result: z.infer<typeof UserPromptResultCreateInputSchema>,
+  result: Omit<
+    z.infer<typeof UserPromptResultCreateInputSchema>,
+    'userPromptHistory'
+  >,
   history: Omit<z.infer<typeof UserPromptHistoryCreateInputSchema>, 'user'>
 ) => {
   const session = await auth();
