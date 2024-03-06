@@ -56,7 +56,7 @@ model User {
   sessions              Session[]
   isTwoFactorEnabled    Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
-  UserPromptHistory     UserPromptHistory[]
+  userPromptHistory     UserPromptHistory[]
 }
 
 model VerificationToken {

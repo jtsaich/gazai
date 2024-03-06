@@ -297,7 +297,7 @@ export const UserIncludeSchema: z.ZodType<Prisma.UserInclude> = z.object({
   accounts: z.union([z.boolean(),z.lazy(() => AccountFindManyArgsSchema)]).optional(),
   sessions: z.union([z.boolean(),z.lazy(() => SessionFindManyArgsSchema)]).optional(),
   twoFactorConfirmation: z.union([z.boolean(),z.lazy(() => TwoFactorConfirmationArgsSchema)]).optional(),
-  UserPromptHistory: z.union([z.boolean(),z.lazy(() => UserPromptHistoryFindManyArgsSchema)]).optional(),
+  userPromptHistory: z.union([z.boolean(),z.lazy(() => UserPromptHistoryFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => UserCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -313,7 +313,7 @@ export const UserCountOutputTypeArgsSchema: z.ZodType<Prisma.UserCountOutputType
 export const UserCountOutputTypeSelectSchema: z.ZodType<Prisma.UserCountOutputTypeSelect> = z.object({
   accounts: z.boolean().optional(),
   sessions: z.boolean().optional(),
-  UserPromptHistory: z.boolean().optional(),
+  userPromptHistory: z.boolean().optional(),
 }).strict();
 
 export const UserSelectSchema: z.ZodType<Prisma.UserSelect> = z.object({
@@ -328,7 +328,7 @@ export const UserSelectSchema: z.ZodType<Prisma.UserSelect> = z.object({
   accounts: z.union([z.boolean(),z.lazy(() => AccountFindManyArgsSchema)]).optional(),
   sessions: z.union([z.boolean(),z.lazy(() => SessionFindManyArgsSchema)]).optional(),
   twoFactorConfirmation: z.union([z.boolean(),z.lazy(() => TwoFactorConfirmationArgsSchema)]).optional(),
-  UserPromptHistory: z.union([z.boolean(),z.lazy(() => UserPromptHistoryFindManyArgsSchema)]).optional(),
+  userPromptHistory: z.union([z.boolean(),z.lazy(() => UserPromptHistoryFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => UserCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -626,7 +626,7 @@ export const UserWhereInputSchema: z.ZodType<Prisma.UserWhereInput> = z.object({
   accounts: z.lazy(() => AccountListRelationFilterSchema).optional(),
   sessions: z.lazy(() => SessionListRelationFilterSchema).optional(),
   twoFactorConfirmation: z.union([ z.lazy(() => TwoFactorConfirmationNullableRelationFilterSchema),z.lazy(() => TwoFactorConfirmationWhereInputSchema) ]).optional().nullable(),
-  UserPromptHistory: z.lazy(() => UserPromptHistoryListRelationFilterSchema).optional()
+  userPromptHistory: z.lazy(() => UserPromptHistoryListRelationFilterSchema).optional()
 }).strict();
 
 export const UserOrderByWithRelationInputSchema: z.ZodType<Prisma.UserOrderByWithRelationInput> = z.object({
@@ -641,7 +641,7 @@ export const UserOrderByWithRelationInputSchema: z.ZodType<Prisma.UserOrderByWit
   accounts: z.lazy(() => AccountOrderByRelationAggregateInputSchema).optional(),
   sessions: z.lazy(() => SessionOrderByRelationAggregateInputSchema).optional(),
   twoFactorConfirmation: z.lazy(() => TwoFactorConfirmationOrderByWithRelationInputSchema).optional(),
-  UserPromptHistory: z.lazy(() => UserPromptHistoryOrderByRelationAggregateInputSchema).optional()
+  userPromptHistory: z.lazy(() => UserPromptHistoryOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
 export const UserWhereUniqueInputSchema: z.ZodType<Prisma.UserWhereUniqueInput> = z.union([
@@ -671,7 +671,7 @@ export const UserWhereUniqueInputSchema: z.ZodType<Prisma.UserWhereUniqueInput> 
   accounts: z.lazy(() => AccountListRelationFilterSchema).optional(),
   sessions: z.lazy(() => SessionListRelationFilterSchema).optional(),
   twoFactorConfirmation: z.union([ z.lazy(() => TwoFactorConfirmationNullableRelationFilterSchema),z.lazy(() => TwoFactorConfirmationWhereInputSchema) ]).optional().nullable(),
-  UserPromptHistory: z.lazy(() => UserPromptHistoryListRelationFilterSchema).optional()
+  userPromptHistory: z.lazy(() => UserPromptHistoryListRelationFilterSchema).optional()
 }).strict());
 
 export const UserOrderByWithAggregationInputSchema: z.ZodType<Prisma.UserOrderByWithAggregationInput> = z.object({
@@ -1351,7 +1351,7 @@ export const UserCreateInputSchema: z.ZodType<Prisma.UserCreateInput> = z.object
   accounts: z.lazy(() => AccountCreateNestedManyWithoutUserInputSchema).optional(),
   sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional(),
   twoFactorConfirmation: z.lazy(() => TwoFactorConfirmationCreateNestedOneWithoutUserInputSchema).optional(),
-  UserPromptHistory: z.lazy(() => UserPromptHistoryCreateNestedManyWithoutUserInputSchema).optional()
+  userPromptHistory: z.lazy(() => UserPromptHistoryCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateInputSchema: z.ZodType<Prisma.UserUncheckedCreateInput> = z.object({
@@ -1366,7 +1366,7 @@ export const UserUncheckedCreateInputSchema: z.ZodType<Prisma.UserUncheckedCreat
   accounts: z.lazy(() => AccountUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   twoFactorConfirmation: z.lazy(() => TwoFactorConfirmationUncheckedCreateNestedOneWithoutUserInputSchema).optional(),
-  UserPromptHistory: z.lazy(() => UserPromptHistoryUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  userPromptHistory: z.lazy(() => UserPromptHistoryUncheckedCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUpdateInputSchema: z.ZodType<Prisma.UserUpdateInput> = z.object({
@@ -1381,7 +1381,7 @@ export const UserUpdateInputSchema: z.ZodType<Prisma.UserUpdateInput> = z.object
   accounts: z.lazy(() => AccountUpdateManyWithoutUserNestedInputSchema).optional(),
   sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional(),
   twoFactorConfirmation: z.lazy(() => TwoFactorConfirmationUpdateOneWithoutUserNestedInputSchema).optional(),
-  UserPromptHistory: z.lazy(() => UserPromptHistoryUpdateManyWithoutUserNestedInputSchema).optional()
+  userPromptHistory: z.lazy(() => UserPromptHistoryUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateInputSchema: z.ZodType<Prisma.UserUncheckedUpdateInput> = z.object({
@@ -1396,7 +1396,7 @@ export const UserUncheckedUpdateInputSchema: z.ZodType<Prisma.UserUncheckedUpdat
   accounts: z.lazy(() => AccountUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   twoFactorConfirmation: z.lazy(() => TwoFactorConfirmationUncheckedUpdateOneWithoutUserNestedInputSchema).optional(),
-  UserPromptHistory: z.lazy(() => UserPromptHistoryUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  userPromptHistory: z.lazy(() => UserPromptHistoryUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserCreateManyInputSchema: z.ZodType<Prisma.UserCreateManyInput> = z.object({
@@ -3173,7 +3173,7 @@ export const UserCreateWithoutAccountsInputSchema: z.ZodType<Prisma.UserCreateWi
   isTwoFactorEnabled: z.boolean().optional(),
   sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional(),
   twoFactorConfirmation: z.lazy(() => TwoFactorConfirmationCreateNestedOneWithoutUserInputSchema).optional(),
-  UserPromptHistory: z.lazy(() => UserPromptHistoryCreateNestedManyWithoutUserInputSchema).optional()
+  userPromptHistory: z.lazy(() => UserPromptHistoryCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateWithoutAccountsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutAccountsInput> = z.object({
@@ -3187,7 +3187,7 @@ export const UserUncheckedCreateWithoutAccountsInputSchema: z.ZodType<Prisma.Use
   isTwoFactorEnabled: z.boolean().optional(),
   sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   twoFactorConfirmation: z.lazy(() => TwoFactorConfirmationUncheckedCreateNestedOneWithoutUserInputSchema).optional(),
-  UserPromptHistory: z.lazy(() => UserPromptHistoryUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  userPromptHistory: z.lazy(() => UserPromptHistoryUncheckedCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserCreateOrConnectWithoutAccountsInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutAccountsInput> = z.object({
@@ -3217,7 +3217,7 @@ export const UserUpdateWithoutAccountsInputSchema: z.ZodType<Prisma.UserUpdateWi
   isTwoFactorEnabled: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional(),
   twoFactorConfirmation: z.lazy(() => TwoFactorConfirmationUpdateOneWithoutUserNestedInputSchema).optional(),
-  UserPromptHistory: z.lazy(() => UserPromptHistoryUpdateManyWithoutUserNestedInputSchema).optional()
+  userPromptHistory: z.lazy(() => UserPromptHistoryUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateWithoutAccountsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutAccountsInput> = z.object({
@@ -3231,7 +3231,7 @@ export const UserUncheckedUpdateWithoutAccountsInputSchema: z.ZodType<Prisma.Use
   isTwoFactorEnabled: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   twoFactorConfirmation: z.lazy(() => TwoFactorConfirmationUncheckedUpdateOneWithoutUserNestedInputSchema).optional(),
-  UserPromptHistory: z.lazy(() => UserPromptHistoryUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  userPromptHistory: z.lazy(() => UserPromptHistoryUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserCreateWithoutSessionsInputSchema: z.ZodType<Prisma.UserCreateWithoutSessionsInput> = z.object({
@@ -3245,7 +3245,7 @@ export const UserCreateWithoutSessionsInputSchema: z.ZodType<Prisma.UserCreateWi
   isTwoFactorEnabled: z.boolean().optional(),
   accounts: z.lazy(() => AccountCreateNestedManyWithoutUserInputSchema).optional(),
   twoFactorConfirmation: z.lazy(() => TwoFactorConfirmationCreateNestedOneWithoutUserInputSchema).optional(),
-  UserPromptHistory: z.lazy(() => UserPromptHistoryCreateNestedManyWithoutUserInputSchema).optional()
+  userPromptHistory: z.lazy(() => UserPromptHistoryCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateWithoutSessionsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutSessionsInput> = z.object({
@@ -3259,7 +3259,7 @@ export const UserUncheckedCreateWithoutSessionsInputSchema: z.ZodType<Prisma.Use
   isTwoFactorEnabled: z.boolean().optional(),
   accounts: z.lazy(() => AccountUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   twoFactorConfirmation: z.lazy(() => TwoFactorConfirmationUncheckedCreateNestedOneWithoutUserInputSchema).optional(),
-  UserPromptHistory: z.lazy(() => UserPromptHistoryUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  userPromptHistory: z.lazy(() => UserPromptHistoryUncheckedCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserCreateOrConnectWithoutSessionsInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutSessionsInput> = z.object({
@@ -3289,7 +3289,7 @@ export const UserUpdateWithoutSessionsInputSchema: z.ZodType<Prisma.UserUpdateWi
   isTwoFactorEnabled: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   accounts: z.lazy(() => AccountUpdateManyWithoutUserNestedInputSchema).optional(),
   twoFactorConfirmation: z.lazy(() => TwoFactorConfirmationUpdateOneWithoutUserNestedInputSchema).optional(),
-  UserPromptHistory: z.lazy(() => UserPromptHistoryUpdateManyWithoutUserNestedInputSchema).optional()
+  userPromptHistory: z.lazy(() => UserPromptHistoryUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateWithoutSessionsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutSessionsInput> = z.object({
@@ -3303,7 +3303,7 @@ export const UserUncheckedUpdateWithoutSessionsInputSchema: z.ZodType<Prisma.Use
   isTwoFactorEnabled: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   accounts: z.lazy(() => AccountUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   twoFactorConfirmation: z.lazy(() => TwoFactorConfirmationUncheckedUpdateOneWithoutUserNestedInputSchema).optional(),
-  UserPromptHistory: z.lazy(() => UserPromptHistoryUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  userPromptHistory: z.lazy(() => UserPromptHistoryUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const AccountCreateWithoutUserInputSchema: z.ZodType<Prisma.AccountCreateWithoutUserInput> = z.object({
@@ -3564,7 +3564,7 @@ export const UserCreateWithoutTwoFactorConfirmationInputSchema: z.ZodType<Prisma
   isTwoFactorEnabled: z.boolean().optional(),
   accounts: z.lazy(() => AccountCreateNestedManyWithoutUserInputSchema).optional(),
   sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional(),
-  UserPromptHistory: z.lazy(() => UserPromptHistoryCreateNestedManyWithoutUserInputSchema).optional()
+  userPromptHistory: z.lazy(() => UserPromptHistoryCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateWithoutTwoFactorConfirmationInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutTwoFactorConfirmationInput> = z.object({
@@ -3578,7 +3578,7 @@ export const UserUncheckedCreateWithoutTwoFactorConfirmationInputSchema: z.ZodTy
   isTwoFactorEnabled: z.boolean().optional(),
   accounts: z.lazy(() => AccountUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
-  UserPromptHistory: z.lazy(() => UserPromptHistoryUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  userPromptHistory: z.lazy(() => UserPromptHistoryUncheckedCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserCreateOrConnectWithoutTwoFactorConfirmationInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutTwoFactorConfirmationInput> = z.object({
@@ -3608,7 +3608,7 @@ export const UserUpdateWithoutTwoFactorConfirmationInputSchema: z.ZodType<Prisma
   isTwoFactorEnabled: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   accounts: z.lazy(() => AccountUpdateManyWithoutUserNestedInputSchema).optional(),
   sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional(),
-  UserPromptHistory: z.lazy(() => UserPromptHistoryUpdateManyWithoutUserNestedInputSchema).optional()
+  userPromptHistory: z.lazy(() => UserPromptHistoryUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateWithoutTwoFactorConfirmationInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutTwoFactorConfirmationInput> = z.object({
@@ -3622,7 +3622,7 @@ export const UserUncheckedUpdateWithoutTwoFactorConfirmationInputSchema: z.ZodTy
   isTwoFactorEnabled: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
   accounts: z.lazy(() => AccountUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
-  UserPromptHistory: z.lazy(() => UserPromptHistoryUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  userPromptHistory: z.lazy(() => UserPromptHistoryUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserCreateWithoutUserPromptHistoryInputSchema: z.ZodType<Prisma.UserCreateWithoutUserPromptHistoryInput> = z.object({
