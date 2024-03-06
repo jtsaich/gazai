@@ -8,7 +8,8 @@ import { UserPromptHistory } from '@/prisma/generated/zod';
 import { MockSDResponse } from '@/mocks/SDResponse';
 
 export async function POST(request: Request) {
-  const requestBody: Omit<UserPromptHistory, 'type'> = await request.json();
+  const requestBody: Omit<UserPromptHistory, 'type' | 'alwaysonScripts'> =
+    await request.json();
   const payload = {
     ...requestBody,
     seed: requestBody.seed || get_random_seed(),
