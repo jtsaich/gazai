@@ -112,6 +112,7 @@ model UserPromptHistory {
   initImages        String[]
   controlMode       Int?
   resizeMode        Int?
+  alwaysonScripts   Json?
 
   createdAt DateTime @default(now())
 

@@ -1,4 +1,3 @@
-import * as z from 'zod';
 import humps from 'humps';
 
 import { get_random_seed } from '@/app/helpers';
@@ -9,18 +8,11 @@ import { UserPromptHistory } from '@/prisma/generated/zod';
 import { MockSDResponse } from '@/mocks/SDResponse';
 
 export async function POST(request: Request) {
-  const requestBody: UserPromptHistory = await request.json();
-  const { prompt, negativePrompt, height, width, cfgScale, batchSize, seed } =
-    requestBody;
+  const requestBody: Omit<UserPromptHistory, 'type'> = await request.json();
 
   const payload = {
-    prompt,
-    negativePrompt,
-    height,
-    width,
-    batchSize,
-    cfgScale,
-    seed: seed || get_random_seed(),
+    ...requestBody,
+    seed: requestBody.seed || get_random_seed(),
     samplerName: 'DPM++ SDE Karras',
     nIter: 1,
     steps: 20

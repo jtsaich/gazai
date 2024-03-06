@@ -46,7 +46,6 @@ export default function TextToImage() {
   });
 
   const onSubmit = async (data: TextToImageFormValues) => {
-    console.log('onSubmit', data);
     let prompt = data.prompt;
     if (Boolean(process.env.NEXT_PUBLIC_ENABLE_TRANSLATION)) {
       try {
@@ -156,7 +155,6 @@ export default function TextToImage() {
                   />
                 </div>
 
-                <span></span>
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
                     <h2 className="text-2xl font-semibold tracking-tight">

@@ -70,11 +70,13 @@ export const TwoFactorTokenScalarFieldEnumSchema = z.enum(['id','email','token',
 
 export const TwoFactorConfirmationScalarFieldEnumSchema = z.enum(['id','userId']);
 
-export const UserPromptHistoryScalarFieldEnumSchema = z.enum(['id','userId','type','batchSize','prompt','negativePrompt','width','height','nIter','steps','seed','samplerName','cfgScale','denoisingStrength','initImages','controlMode','resizeMode','createdAt']);
+export const UserPromptHistoryScalarFieldEnumSchema = z.enum(['id','userId','type','batchSize','prompt','negativePrompt','width','height','nIter','steps','seed','samplerName','cfgScale','denoisingStrength','initImages','controlMode','resizeMode','alwaysonScripts','createdAt']);
 
 export const UserPromptResultScalarFieldEnumSchema = z.enum(['id','userPromptHistoryId','images','parameters','info','createdAt']);
 
 export const SortOrderSchema = z.enum(['asc','desc']);
+
+export const NullableJsonNullValueInputSchema = z.enum(['DbNull','JsonNull',]).transform((value) => value === 'JsonNull' ? Prisma.JsonNull : value === 'DbNull' ? Prisma.DbNull : value);
 
 export const JsonNullValueInputSchema = z.enum(['JsonNull',]).transform((value) => (value === 'JsonNull' ? Prisma.JsonNull : value));
 
@@ -215,6 +217,7 @@ export const UserPromptHistorySchema = z.object({
   initImages: z.string().array(),
   controlMode: z.number().int().nullable(),
   resizeMode: z.number().int().nullable(),
+  alwaysonScripts: JsonValueSchema,
   createdAt: z.coerce.date(),
 })
 
@@ -408,6 +411,7 @@ export const UserPromptHistorySelectSchema: z.ZodType<Prisma.UserPromptHistorySe
   initImages: z.boolean().optional(),
   controlMode: z.boolean().optional(),
   resizeMode: z.boolean().optional(),
+  alwaysonScripts: z.boolean().optional(),
   createdAt: z.boolean().optional(),
   user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
   userPromptResult: z.union([z.boolean(),z.lazy(() => UserPromptResultArgsSchema)]).optional(),
@@ -999,6 +1003,7 @@ export const UserPromptHistoryWhereInputSchema: z.ZodType<Prisma.UserPromptHisto
   initImages: z.lazy(() => StringNullableListFilterSchema).optional(),
   controlMode: z.union([ z.lazy(() => IntNullableFilterSchema),z.number() ]).optional().nullable(),
   resizeMode: z.union([ z.lazy(() => IntNullableFilterSchema),z.number() ]).optional().nullable(),
+  alwaysonScripts: z.lazy(() => JsonNullableFilterSchema).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
   userPromptResult: z.union([ z.lazy(() => UserPromptResultNullableRelationFilterSchema),z.lazy(() => UserPromptResultWhereInputSchema) ]).optional().nullable(),
@@ -1022,6 +1027,7 @@ export const UserPromptHistoryOrderByWithRelationInputSchema: z.ZodType<Prisma.U
   initImages: z.lazy(() => SortOrderSchema).optional(),
   controlMode: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   resizeMode: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  alwaysonScripts: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   user: z.lazy(() => UserOrderByWithRelationInputSchema).optional(),
   userPromptResult: z.lazy(() => UserPromptResultOrderByWithRelationInputSchema).optional()
@@ -1051,6 +1057,7 @@ export const UserPromptHistoryWhereUniqueInputSchema: z.ZodType<Prisma.UserPromp
   initImages: z.lazy(() => StringNullableListFilterSchema).optional(),
   controlMode: z.union([ z.lazy(() => IntNullableFilterSchema),z.number().int() ]).optional().nullable(),
   resizeMode: z.union([ z.lazy(() => IntNullableFilterSchema),z.number().int() ]).optional().nullable(),
+  alwaysonScripts: z.lazy(() => JsonNullableFilterSchema).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   user: z.union([ z.lazy(() => UserRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
   userPromptResult: z.union([ z.lazy(() => UserPromptResultNullableRelationFilterSchema),z.lazy(() => UserPromptResultWhereInputSchema) ]).optional().nullable(),
@@ -1074,6 +1081,7 @@ export const UserPromptHistoryOrderByWithAggregationInputSchema: z.ZodType<Prism
   initImages: z.lazy(() => SortOrderSchema).optional(),
   controlMode: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   resizeMode: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  alwaysonScripts: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   _count: z.lazy(() => UserPromptHistoryCountOrderByAggregateInputSchema).optional(),
   _avg: z.lazy(() => UserPromptHistoryAvgOrderByAggregateInputSchema).optional(),
@@ -1103,6 +1111,7 @@ export const UserPromptHistoryScalarWhereWithAggregatesInputSchema: z.ZodType<Pr
   initImages: z.lazy(() => StringNullableListFilterSchema).optional(),
   controlMode: z.union([ z.lazy(() => IntNullableWithAggregatesFilterSchema),z.number() ]).optional().nullable(),
   resizeMode: z.union([ z.lazy(() => IntNullableWithAggregatesFilterSchema),z.number() ]).optional().nullable(),
+  alwaysonScripts: z.lazy(() => JsonNullableWithAggregatesFilterSchema).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
 }).strict();
 
@@ -1621,6 +1630,7 @@ export const UserPromptHistoryCreateInputSchema: z.ZodType<Prisma.UserPromptHist
   initImages: z.union([ z.lazy(() => UserPromptHistoryCreateinitImagesInputSchema),z.string().array() ]).optional(),
   controlMode: z.number().int().optional().nullable(),
   resizeMode: z.number().int().optional().nullable(),
+  alwaysonScripts: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   createdAt: z.coerce.date().optional(),
   user: z.lazy(() => UserCreateNestedOneWithoutUserPromptHistoryInputSchema),
   userPromptResult: z.lazy(() => UserPromptResultCreateNestedOneWithoutUserPromptHistoryInputSchema).optional()
@@ -1644,6 +1654,7 @@ export const UserPromptHistoryUncheckedCreateInputSchema: z.ZodType<Prisma.UserP
   initImages: z.union([ z.lazy(() => UserPromptHistoryCreateinitImagesInputSchema),z.string().array() ]).optional(),
   controlMode: z.number().int().optional().nullable(),
   resizeMode: z.number().int().optional().nullable(),
+  alwaysonScripts: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   createdAt: z.coerce.date().optional(),
   userPromptResult: z.lazy(() => UserPromptResultUncheckedCreateNestedOneWithoutUserPromptHistoryInputSchema).optional()
 }).strict();
@@ -1665,6 +1676,7 @@ export const UserPromptHistoryUpdateInputSchema: z.ZodType<Prisma.UserPromptHist
   initImages: z.union([ z.lazy(() => UserPromptHistoryUpdateinitImagesInputSchema),z.string().array() ]).optional(),
   controlMode: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   resizeMode: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  alwaysonScripts: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   user: z.lazy(() => UserUpdateOneRequiredWithoutUserPromptHistoryNestedInputSchema).optional(),
   userPromptResult: z.lazy(() => UserPromptResultUpdateOneWithoutUserPromptHistoryNestedInputSchema).optional()
@@ -1688,6 +1700,7 @@ export const UserPromptHistoryUncheckedUpdateInputSchema: z.ZodType<Prisma.UserP
   initImages: z.union([ z.lazy(() => UserPromptHistoryUpdateinitImagesInputSchema),z.string().array() ]).optional(),
   controlMode: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   resizeMode: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  alwaysonScripts: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   userPromptResult: z.lazy(() => UserPromptResultUncheckedUpdateOneWithoutUserPromptHistoryNestedInputSchema).optional()
 }).strict();
@@ -1710,6 +1723,7 @@ export const UserPromptHistoryCreateManyInputSchema: z.ZodType<Prisma.UserPrompt
   initImages: z.union([ z.lazy(() => UserPromptHistoryCreateinitImagesInputSchema),z.string().array() ]).optional(),
   controlMode: z.number().int().optional().nullable(),
   resizeMode: z.number().int().optional().nullable(),
+  alwaysonScripts: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   createdAt: z.coerce.date().optional()
 }).strict();
 
@@ -1730,6 +1744,7 @@ export const UserPromptHistoryUpdateManyMutationInputSchema: z.ZodType<Prisma.Us
   initImages: z.union([ z.lazy(() => UserPromptHistoryUpdateinitImagesInputSchema),z.string().array() ]).optional(),
   controlMode: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   resizeMode: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  alwaysonScripts: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
@@ -1751,6 +1766,7 @@ export const UserPromptHistoryUncheckedUpdateManyInputSchema: z.ZodType<Prisma.U
   initImages: z.union([ z.lazy(() => UserPromptHistoryUpdateinitImagesInputSchema),z.string().array() ]).optional(),
   controlMode: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   resizeMode: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  alwaysonScripts: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
@@ -2280,6 +2296,22 @@ export const StringNullableListFilterSchema: z.ZodType<Prisma.StringNullableList
   isEmpty: z.boolean().optional()
 }).strict();
 
+export const JsonNullableFilterSchema: z.ZodType<Prisma.JsonNullableFilter> = z.object({
+  equals: InputJsonValueSchema.optional(),
+  path: z.string().array().optional(),
+  string_contains: z.string().optional(),
+  string_starts_with: z.string().optional(),
+  string_ends_with: z.string().optional(),
+  array_contains: InputJsonValueSchema.optional().nullable(),
+  array_starts_with: InputJsonValueSchema.optional().nullable(),
+  array_ends_with: InputJsonValueSchema.optional().nullable(),
+  lt: InputJsonValueSchema.optional(),
+  lte: InputJsonValueSchema.optional(),
+  gt: InputJsonValueSchema.optional(),
+  gte: InputJsonValueSchema.optional(),
+  not: InputJsonValueSchema.optional()
+}).strict();
+
 export const UserPromptResultNullableRelationFilterSchema: z.ZodType<Prisma.UserPromptResultNullableRelationFilter> = z.object({
   is: z.lazy(() => UserPromptResultWhereInputSchema).optional().nullable(),
   isNot: z.lazy(() => UserPromptResultWhereInputSchema).optional().nullable()
@@ -2303,6 +2335,7 @@ export const UserPromptHistoryCountOrderByAggregateInputSchema: z.ZodType<Prisma
   initImages: z.lazy(() => SortOrderSchema).optional(),
   controlMode: z.lazy(() => SortOrderSchema).optional(),
   resizeMode: z.lazy(() => SortOrderSchema).optional(),
+  alwaysonScripts: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -2418,6 +2451,25 @@ export const FloatNullableWithAggregatesFilterSchema: z.ZodType<Prisma.FloatNull
   _sum: z.lazy(() => NestedFloatNullableFilterSchema).optional(),
   _min: z.lazy(() => NestedFloatNullableFilterSchema).optional(),
   _max: z.lazy(() => NestedFloatNullableFilterSchema).optional()
+}).strict();
+
+export const JsonNullableWithAggregatesFilterSchema: z.ZodType<Prisma.JsonNullableWithAggregatesFilter> = z.object({
+  equals: InputJsonValueSchema.optional(),
+  path: z.string().array().optional(),
+  string_contains: z.string().optional(),
+  string_starts_with: z.string().optional(),
+  string_ends_with: z.string().optional(),
+  array_contains: InputJsonValueSchema.optional().nullable(),
+  array_starts_with: InputJsonValueSchema.optional().nullable(),
+  array_ends_with: InputJsonValueSchema.optional().nullable(),
+  lt: InputJsonValueSchema.optional(),
+  lte: InputJsonValueSchema.optional(),
+  gt: InputJsonValueSchema.optional(),
+  gte: InputJsonValueSchema.optional(),
+  not: InputJsonValueSchema.optional(),
+  _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
+  _min: z.lazy(() => NestedJsonNullableFilterSchema).optional(),
+  _max: z.lazy(() => NestedJsonNullableFilterSchema).optional()
 }).strict();
 
 export const JsonFilterSchema: z.ZodType<Prisma.JsonFilter> = z.object({
@@ -3078,6 +3130,22 @@ export const NestedFloatNullableWithAggregatesFilterSchema: z.ZodType<Prisma.Nes
   _max: z.lazy(() => NestedFloatNullableFilterSchema).optional()
 }).strict();
 
+export const NestedJsonNullableFilterSchema: z.ZodType<Prisma.NestedJsonNullableFilter> = z.object({
+  equals: InputJsonValueSchema.optional(),
+  path: z.string().array().optional(),
+  string_contains: z.string().optional(),
+  string_starts_with: z.string().optional(),
+  string_ends_with: z.string().optional(),
+  array_contains: InputJsonValueSchema.optional().nullable(),
+  array_starts_with: InputJsonValueSchema.optional().nullable(),
+  array_ends_with: InputJsonValueSchema.optional().nullable(),
+  lt: InputJsonValueSchema.optional(),
+  lte: InputJsonValueSchema.optional(),
+  gt: InputJsonValueSchema.optional(),
+  gte: InputJsonValueSchema.optional(),
+  not: InputJsonValueSchema.optional()
+}).strict();
+
 export const NestedJsonFilterSchema: z.ZodType<Prisma.NestedJsonFilter> = z.object({
   equals: InputJsonValueSchema.optional(),
   path: z.string().array().optional(),
@@ -3328,6 +3396,7 @@ export const UserPromptHistoryCreateWithoutUserInputSchema: z.ZodType<Prisma.Use
   initImages: z.union([ z.lazy(() => UserPromptHistoryCreateinitImagesInputSchema),z.string().array() ]).optional(),
   controlMode: z.number().int().optional().nullable(),
   resizeMode: z.number().int().optional().nullable(),
+  alwaysonScripts: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   createdAt: z.coerce.date().optional(),
   userPromptResult: z.lazy(() => UserPromptResultCreateNestedOneWithoutUserPromptHistoryInputSchema).optional()
 }).strict();
@@ -3349,6 +3418,7 @@ export const UserPromptHistoryUncheckedCreateWithoutUserInputSchema: z.ZodType<P
   initImages: z.union([ z.lazy(() => UserPromptHistoryCreateinitImagesInputSchema),z.string().array() ]).optional(),
   controlMode: z.number().int().optional().nullable(),
   resizeMode: z.number().int().optional().nullable(),
+  alwaysonScripts: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   createdAt: z.coerce.date().optional(),
   userPromptResult: z.lazy(() => UserPromptResultUncheckedCreateNestedOneWithoutUserPromptHistoryInputSchema).optional()
 }).strict();
@@ -3479,6 +3549,7 @@ export const UserPromptHistoryScalarWhereInputSchema: z.ZodType<Prisma.UserPromp
   initImages: z.lazy(() => StringNullableListFilterSchema).optional(),
   controlMode: z.union([ z.lazy(() => IntNullableFilterSchema),z.number() ]).optional().nullable(),
   resizeMode: z.union([ z.lazy(() => IntNullableFilterSchema),z.number() ]).optional().nullable(),
+  alwaysonScripts: z.lazy(() => JsonNullableFilterSchema).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
 }).strict();
 
@@ -3691,6 +3762,7 @@ export const UserPromptHistoryCreateWithoutUserPromptResultInputSchema: z.ZodTyp
   initImages: z.union([ z.lazy(() => UserPromptHistoryCreateinitImagesInputSchema),z.string().array() ]).optional(),
   controlMode: z.number().int().optional().nullable(),
   resizeMode: z.number().int().optional().nullable(),
+  alwaysonScripts: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   createdAt: z.coerce.date().optional(),
   user: z.lazy(() => UserCreateNestedOneWithoutUserPromptHistoryInputSchema)
 }).strict();
@@ -3713,6 +3785,7 @@ export const UserPromptHistoryUncheckedCreateWithoutUserPromptResultInputSchema:
   initImages: z.union([ z.lazy(() => UserPromptHistoryCreateinitImagesInputSchema),z.string().array() ]).optional(),
   controlMode: z.number().int().optional().nullable(),
   resizeMode: z.number().int().optional().nullable(),
+  alwaysonScripts: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   createdAt: z.coerce.date().optional()
 }).strict();
 
@@ -3749,6 +3822,7 @@ export const UserPromptHistoryUpdateWithoutUserPromptResultInputSchema: z.ZodTyp
   initImages: z.union([ z.lazy(() => UserPromptHistoryUpdateinitImagesInputSchema),z.string().array() ]).optional(),
   controlMode: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   resizeMode: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  alwaysonScripts: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   user: z.lazy(() => UserUpdateOneRequiredWithoutUserPromptHistoryNestedInputSchema).optional()
 }).strict();
@@ -3771,6 +3845,7 @@ export const UserPromptHistoryUncheckedUpdateWithoutUserPromptResultInputSchema:
   initImages: z.union([ z.lazy(() => UserPromptHistoryUpdateinitImagesInputSchema),z.string().array() ]).optional(),
   controlMode: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   resizeMode: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  alwaysonScripts: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
@@ -3811,6 +3886,7 @@ export const UserPromptHistoryCreateManyUserInputSchema: z.ZodType<Prisma.UserPr
   initImages: z.union([ z.lazy(() => UserPromptHistoryCreateinitImagesInputSchema),z.string().array() ]).optional(),
   controlMode: z.number().int().optional().nullable(),
   resizeMode: z.number().int().optional().nullable(),
+  alwaysonScripts: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   createdAt: z.coerce.date().optional()
 }).strict();
 
@@ -3891,6 +3967,7 @@ export const UserPromptHistoryUpdateWithoutUserInputSchema: z.ZodType<Prisma.Use
   initImages: z.union([ z.lazy(() => UserPromptHistoryUpdateinitImagesInputSchema),z.string().array() ]).optional(),
   controlMode: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   resizeMode: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  alwaysonScripts: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   userPromptResult: z.lazy(() => UserPromptResultUpdateOneWithoutUserPromptHistoryNestedInputSchema).optional()
 }).strict();
@@ -3912,6 +3989,7 @@ export const UserPromptHistoryUncheckedUpdateWithoutUserInputSchema: z.ZodType<P
   initImages: z.union([ z.lazy(() => UserPromptHistoryUpdateinitImagesInputSchema),z.string().array() ]).optional(),
   controlMode: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   resizeMode: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  alwaysonScripts: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   userPromptResult: z.lazy(() => UserPromptResultUncheckedUpdateOneWithoutUserPromptHistoryNestedInputSchema).optional()
 }).strict();
@@ -3933,6 +4011,7 @@ export const UserPromptHistoryUncheckedUpdateManyWithoutUserInputSchema: z.ZodTy
   initImages: z.union([ z.lazy(() => UserPromptHistoryUpdateinitImagesInputSchema),z.string().array() ]).optional(),
   controlMode: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   resizeMode: z.union([ z.number().int(),z.lazy(() => NullableIntFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  alwaysonScripts: z.union([ z.lazy(() => NullableJsonNullValueInputSchema),InputJsonValueSchema ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 

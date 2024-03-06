@@ -18,13 +18,15 @@ import NumberOfImages from '../_components/number-of-images';
 import ModelSelect from '../_components/model-select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { SketchToImageSchema } from '@/schemas';
-import * as z from 'zod';
-
-type SketchToImageFormValues = z.infer<typeof SketchToImageSchema>;
+import { SketchToImageSchema, SketchToImageFormValues } from '@/schemas';
+import { BetterUserPromptResult } from '../_types';
+import { Separator } from '@/components/ui/separator';
+import GenerationHistory from '../_components/generation-history';
 
 export default function SketchToImage() {
-  const [images, setImages] = useState([]);
+  const [generationHistory, setGenerationHistory] = useState<
+    BetterUserPromptResult[]
+  >([]);
   const {
     control,
     handleSubmit,
@@ -45,6 +47,7 @@ export default function SketchToImage() {
     },
     resolver: zodResolver(SketchToImageSchema)
   });
+  console.debug(errors);
 
   const onSubmit = async (data: SketchToImageFormValues) => {
     let prompt = data.prompt;
@@ -54,7 +57,7 @@ export default function SketchToImage() {
           text: data.prompt
         });
         const { text } = response.data;
-        prompt += text;
+        prompt = text;
       } catch (error) {
         console.error(error);
       }
@@ -63,9 +66,10 @@ export default function SketchToImage() {
     const promptPrefix = data.loraSelections.map((lora) => lora.id).join('');
     prompt = promptPrefix + data.prompt;
 
-    const { loraSelections, inference, ...payload } = {
+    const { loraSelections, inference, inputImage, ...payload } = {
       ...data,
-      prompt
+      prompt,
+      initImages: [data.inputImage]
     };
 
     let url = '';
@@ -83,8 +87,8 @@ export default function SketchToImage() {
     console.debug(url, payload);
     try {
       const response = await axios.post(url, payload);
-      const { images } = response.data;
-      setImages(images);
+      const data: BetterUserPromptResult = response.data;
+      setGenerationHistory([data, ...generationHistory]);
     } catch (error) {
       console.error(error);
     }
@@ -107,7 +111,7 @@ export default function SketchToImage() {
             <Controller
               render={({ field }) => (
                 <NumberOfImages
-                  value={String(field.value)}
+                  value={Number(field.value)}
                   onChange={field.onChange}
                 />
               )}
@@ -170,7 +174,7 @@ export default function SketchToImage() {
         <ResizableHandle />
         <ResizablePanel defaultSize={80} className="h-screen">
           <main className="flex flex-col h-full w-full">
-            <ScrollArea className="p-10">
+            <ScrollArea>
               <div className="p-10">
                 <div className="flex flex-col gap-4 pb-4">
                   <Input label="Prompt" {...register('prompt')} />
@@ -183,7 +187,7 @@ export default function SketchToImage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2">
+                <div className="grid grid-cols-2 pb-4">
                   <Controller
                     render={({ field }) => (
                       <DrawingCanvas
@@ -193,17 +197,23 @@ export default function SketchToImage() {
                     control={control}
                     name="inputImage"
                   />
-                  <div className="grid grid-cols-2 gap-4">
-                    {images.map((base64, i) => (
-                      <div key={`generated-${i}`}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={`data:image/png;base64,${base64}`}
-                          alt={`generated image ${i}`}
-                        />
-                      </div>
-                    ))}
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <h2 className="text-2xl font-semibold tracking-tight">
+                      Generation history
+                    </h2>
                   </div>
+                </div>
+                <Separator className="my-4" />
+                <div className="flex flex-col gap-y-4">
+                  {generationHistory.map((history, i) => (
+                    <div key={i}>
+                      <GenerationHistory history={history} />
+                      <Separator className="my-4" />
+                    </div>
+                  ))}
                 </div>
               </div>
             </ScrollArea>

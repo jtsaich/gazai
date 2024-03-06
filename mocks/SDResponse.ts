@@ -10,7 +10,8 @@ export const MockSDResponse = ({
   seed,
   samplerName,
   nIter,
-  steps
+  steps,
+  alwaysOnScripts
 }: {
   prompt: string;
   negativePrompt: string;
@@ -22,6 +23,7 @@ export const MockSDResponse = ({
   samplerName: string;
   nIter: number;
   steps: number;
+  alwaysOnScripts?: any;
 }) => ({
   images: Array(batchSize).fill(MockImage),
   parameters: {
