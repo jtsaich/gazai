@@ -14,7 +14,6 @@ const Input = React.forwardRef(
       )}
       <input
         ref={ref}
-        type="text"
         placeholder="Type here"
         className="input input-bordered w-full"
         {...rest}

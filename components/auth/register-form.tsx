@@ -12,7 +12,6 @@ import FormError from '../form/form-error';
 import FormSuccess from '../form/form-success';
 import { register } from '@/actions/register';
 import Input from '@/components/form/input';
-import Social from './social';
 
 const RegisterForm = () => {
   const isClient = useIsClient();
@@ -88,10 +87,10 @@ const RegisterForm = () => {
             <Input
               label="Confirm your password"
               disabled={isPending}
-              type="passwordConfirmation"
+              type="password"
               placeholder="******"
               autoComplete="new-password"
-              {...form.register('password')}
+              {...form.register('passwordConfirmation')}
             />
           </div>
           {error && <FormError message={error} />}

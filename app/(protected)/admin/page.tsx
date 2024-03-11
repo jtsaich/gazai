@@ -1,5 +1,4 @@
 import { cache } from 'react';
-import { auth } from '../../../auth';
 import SetAsAdminButton from '../../../components/setAsAdminButton';
 import prisma from '@/lib/prisma';
 import RoleGate from '@/components/auth/role-gate';
