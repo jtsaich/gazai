@@ -43,7 +43,7 @@ export async function POST(request: Request) {
   };
 
   let result;
-  if (process.env.USE_MOCK_SD_RESPONSE) {
+  if (Boolean(process.env.USE_MOCK_SD_RESPONSE)) {
     result = MockSDResponse(payload);
   } else {
     const res = await fetch(`${process.env.SD_API_HOST}/sdapi/v1/txt2img`, {
