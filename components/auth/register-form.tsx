@@ -8,10 +8,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useIsClient } from '@/hooks/use-is-client';
 import Spinner from '../spinner';
 import { RegisterSchema } from '@/schemas';
-import FormError from '../form/form-error';
-import FormSuccess from '../form/form-success';
+import FormError from '../form-error';
+import FormSuccess from '../form-success';
 import { register } from '@/actions/register';
 import Input from '@/components/form/input';
+import Link from 'next/link';
 
 const RegisterForm = () => {
   const isClient = useIsClient();
@@ -100,8 +101,22 @@ const RegisterForm = () => {
             disabled={isPending}
             className="btn btn-primary w-full"
           >
-            Register
+            {isPending ? (
+              <>
+                <span className="loading loading-spinner"></span>
+                loading
+              </>
+            ) : (
+              'Register'
+            )}
           </button>
+
+          <div className="text-center">
+            Already have an account?{' '}
+            <Link href="/auth/login" className="link">
+              Sign in
+            </Link>
+          </div>
         </form>
       </div>
     </div>

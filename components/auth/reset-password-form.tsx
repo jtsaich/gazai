@@ -7,8 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { ResetSchema } from '@/schemas';
 
-import FormError from '@/components/form/form-error';
-import FormSuccess from '@/components/form/form-success';
+import FormError from '@/components/form-error';
+import FormSuccess from '@/components/form-success';
 import { reset } from '@/actions/reset';
 import Input from '../form/input';
 
@@ -37,26 +37,43 @@ const ResetPasswordForm = () => {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-      <div className="space-y-4">
-        <Input
-          label="Email"
-          disabled={isPending}
-          placeholder="your.email@example.com"
-          type="email"
-          {...form.register('email')}
-        />
+    <div className="mx-auto flex w-full flex-col justify-center gap-y-6 sm:w-[350px]">
+      <div className="flex flex-col gap-y-2 text-center">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Set a new password
+        </h1>
       </div>
-      {error && <FormError message={error} />}
-      {success && <FormSuccess message={success} />}
-      <button
-        disabled={isPending}
-        type="submit"
-        className="btn btn-primary w-full"
-      >
-        Send reset password email
-      </button>
-    </form>
+      <div className="grid gap-6">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col gap-y-6"
+        >
+          <Input
+            label="Email"
+            disabled={isPending}
+            placeholder="your.email@example.com"
+            type="email"
+            {...form.register('email')}
+          />
+          {error && <FormError message={error} />}
+          {success && <FormSuccess message={success} />}
+          <button
+            disabled={isPending}
+            type="submit"
+            className="btn btn-primary w-full"
+          >
+            {isPending ? (
+              <>
+                <span className="loading loading-spinner"></span>
+                loading
+              </>
+            ) : (
+              'Send reset password email'
+            )}
+          </button>
+        </form>
+      </div>
+    </div>
   );
 };
 

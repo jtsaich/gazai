@@ -10,8 +10,8 @@ import Link from 'next/link';
 import { useIsClient } from '@/hooks/use-is-client';
 import { LoginSchema } from '@/schemas';
 
-import FormError from '../form/form-error';
-import FormSuccess from '../form/form-success';
+import FormError from '../form-error';
+import FormSuccess from '../form-success';
 import { login } from '@/actions/login';
 import Input from '../form/input';
 import Spinner from '../spinner';
@@ -111,7 +111,9 @@ const LoginForm = () => {
                 autoComplete="current-password"
                 {...form.register('password')}
               />
-              <Link href="/auth/reset">Forgot your password?</Link>
+              <Link href="/auth/reset" className="link">
+                Forgot your password?
+              </Link>
             </>
           )}
         </div>
@@ -122,7 +124,16 @@ const LoginForm = () => {
           disabled={isPending}
           className="btn btn-primary w-full"
         >
-          {showTwoFactor ? 'Confirm' : 'Login'}
+          {isPending ? (
+            <>
+              <span className="loading loading-spinner"></span>
+              loading
+            </>
+          ) : showTwoFactor ? (
+            'Confirm'
+          ) : (
+            'Login'
+          )}
         </button>
       </form>
       <div className="relative">
@@ -135,6 +146,13 @@ const LoginForm = () => {
       </div>
 
       <Social />
+
+      <div className="text-center">
+        Need an account?{' '}
+        <Link href="/auth/register" className="link">
+          Sign up
+        </Link>
+      </div>
     </div>
   );
 };
