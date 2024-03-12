@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Controller, useForm } from 'react-hook-form';
 import clsx from 'clsx';
@@ -43,6 +43,20 @@ export default function TextToImage() {
       loraSelections: [LoRAs[0], LoRAs[1]]
     },
     resolver: zodResolver(TextToImageSchema)
+  });
+
+  useEffect(() => {
+    const fetchGenerationHistory = async () => {
+      try {
+        const response = await axios.get('/api/user-prompt-result');
+        const data: BetterUserPromptResult[] = response.data;
+        setGenerationHistory(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchGenerationHistory();
   });
 
   const onSubmit = async (data: TextToImageFormValues) => {

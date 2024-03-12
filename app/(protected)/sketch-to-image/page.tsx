@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 import clsx from 'clsx';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { LoRAs } from '@/app/constants';
 import Select from '@/components/form/select';
@@ -47,7 +47,20 @@ export default function SketchToImage() {
     },
     resolver: zodResolver(SketchToImageSchema)
   });
-  console.debug(errors);
+
+  useEffect(() => {
+    const fetchGenerationHistory = async () => {
+      try {
+        const response = await axios.get('/api/user-prompt-result');
+        const data: BetterUserPromptResult[] = response.data;
+        setGenerationHistory(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchGenerationHistory();
+  });
 
   const onSubmit = async (data: SketchToImageFormValues) => {
     let prompt = data.prompt;
