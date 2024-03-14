@@ -7,7 +7,9 @@ import bcrypt from 'bcryptjs';
 
 export default {
   providers: [
-    Google,
+    Google({
+      allowDangerousEmailAccountLinking: true
+    }),
     Credentials({
       async authorize(credentials) {
         const validatedFields = LoginSchema.safeParse(credentials);

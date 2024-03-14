@@ -57,7 +57,7 @@ export default function TextToImage() {
     };
 
     fetchGenerationHistory();
-  });
+  }, []);
 
   const onSubmit = async (data: TextToImageFormValues) => {
     let prompt = data.prompt;

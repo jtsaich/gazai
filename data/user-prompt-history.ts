@@ -7,6 +7,9 @@ export const getUserPromptResultByUserId = async (userId: string) => {
         userPromptHistory: {
           userId
         }
+      },
+      orderBy: {
+        createdAt: 'desc'
       }
     });
 
