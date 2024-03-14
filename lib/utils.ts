@@ -9,3 +9,7 @@ export function isTrue(value?: string) {
   if (value === undefined) return false;
   return /^true$/i.test(value);
 }
+
+export function getRandomSeed() {
+  return BigInt(Math.floor(Math.random() * 9007199254740991));
+}

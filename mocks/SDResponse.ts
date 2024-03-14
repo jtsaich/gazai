@@ -19,7 +19,7 @@ export const MockSDResponse = ({
   width: number;
   batchSize: number;
   cfgScale: number;
-  seed: bigint;
+  seed: number;
   samplerName: string;
   nIter: number;
   steps: number;
@@ -30,7 +30,7 @@ export const MockSDResponse = ({
     prompt: prompt,
     negative_prompt: negativePrompt,
     styles: null,
-    seed: Number(seed),
+    seed,
     subseed: -1,
     subseed_strength: 0,
     seed_resize_from_h: -1,

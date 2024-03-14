@@ -1,6 +1,6 @@
 import humps from 'humps';
 
-import { get_random_seed } from '@/app/helpers';
+import { getRandomSeed } from '@/lib/utils';
 import { createUserPromptResultWithHistory } from '@/actions/user-prompt-result';
 import { UserPromptHistory } from '@/prisma/generated/zod';
 
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     await request.json();
   const payload = {
     ...requestBody,
-    seed: requestBody.seed || get_random_seed(),
+    seed: Number(requestBody.seed || getRandomSeed()),
     samplerName: 'DPM++ SDE Karras',
     nIter: 1,
     steps: 20
