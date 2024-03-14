@@ -22,6 +22,10 @@ import { TextToImageSchema } from '@/schemas';
 import { TextToImageFormValues, BetterUserPromptResult } from '../_types';
 import GenerationHistory from '../_components/generation-history';
 import { Separator } from '@/components/ui/separator';
+import { isTrue } from '@/lib/utils';
+
+const enableTranslation = isTrue(process.env.NEXT_PUBLIC_ENABLE_TRANSLATION);
+
 export default function TextToImage() {
   const [generationHistory, setGenerationHistory] = useState<
     BetterUserPromptResult[]
@@ -63,7 +67,7 @@ export default function TextToImage() {
 
   const onSubmit = async (data: TextToImageFormValues) => {
     let prompt = data.prompt;
-    if (Boolean(process.env.NEXT_PUBLIC_ENABLE_TRANSLATION)) {
+    if (enableTranslation) {
       try {
         const response = await axios.post('/api/translate', {
           text: data.prompt

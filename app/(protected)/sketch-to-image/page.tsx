@@ -22,6 +22,9 @@ import { SketchToImageSchema, SketchToImageFormValues } from '@/schemas';
 import { BetterUserPromptResult } from '../_types';
 import { Separator } from '@/components/ui/separator';
 import GenerationHistory from '../_components/generation-history';
+import { isTrue } from '@/lib/utils';
+
+const enableTranslation = isTrue(process.env.NEXT_PUBLIC_ENABLE_TRANSLATION);
 
 export default function SketchToImage() {
   const [generationHistory, setGenerationHistory] = useState<
@@ -67,7 +70,7 @@ export default function SketchToImage() {
 
   const onSubmit = async (data: SketchToImageFormValues) => {
     let prompt = data.prompt;
-    if (Boolean(process.env.NEXT_PUBLIC_ENABLE_TRANSLATION)) {
+    if (enableTranslation) {
       try {
         const response = await axios.post('/api/translate', {
           text: data.prompt

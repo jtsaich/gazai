@@ -6,6 +6,9 @@ import { UserPromptHistory } from '@/prisma/generated/zod';
 
 // testing
 import { MockSDResponse } from '@/mocks/SDResponse';
+import { isTrue } from '@/lib/utils';
+
+const useMockResponse = isTrue(process.env.USE_MOCK_SD_RESPONSE);
 
 export async function POST(request: Request) {
   const requestBody: Omit<UserPromptHistory, 'type'> = await request.json();
@@ -39,7 +42,7 @@ export async function POST(request: Request) {
   };
 
   let result;
-  if (Boolean(process.env.USE_MOCK_SD_RESPONSE)) {
+  if (useMockResponse) {
     result = MockSDResponse(payload);
   } else {
     const res = await fetch(`${process.env.SD_API_HOST}/sdapi/v1/txt2img`, {
