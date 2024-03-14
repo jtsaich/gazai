@@ -15,8 +15,10 @@ interface p5Exposed extends p5 {
 }
 
 function DrawingCanvas({
+  guidedImage,
   setCanvasOutput
 }: {
+  guidedImage: string;
   setCanvasOutput: (dataUrl: string) => void;
 }) {
   const clear = useRef<HTMLButtonElement>(null);
@@ -107,6 +109,25 @@ function DrawingCanvas({
     myp5.current = new p5(s, container.current!);
   });
 
+  useEffect(() => {
+    if (!myp5?.current) {
+      return;
+    }
+    if (!guidedImage) {
+      return;
+    }
+    const img = myp5.current.loadImage(
+      guidedImage,
+      (img) => {
+        console.debug('success');
+        myp5.current && myp5.current.image(img, 0, 0);
+      },
+      () => {
+        console.error('failed');
+      }
+    );
+  }, [guidedImage]);
+
   return (
     <div className="min-w-0 flex flex-row">
       <div>
@@ -128,6 +149,7 @@ function DrawingCanvas({
           </li>
           <li>
             <button
+              type="button"
               ref={clear}
               onClick={() => {
                 paths.current?.splice(0);

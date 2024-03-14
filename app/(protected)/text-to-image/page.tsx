@@ -50,7 +50,9 @@ export default function TextToImage() {
       try {
         const response = await axios.get('/api/user-prompt-result');
         const data: BetterUserPromptResult[] = response.data;
-        setGenerationHistory(data);
+        if (data) {
+          setGenerationHistory((prev) => [...prev, ...data]);
+        }
       } catch (error) {
         console.error(error);
       }
@@ -85,7 +87,7 @@ export default function TextToImage() {
     try {
       const response = await axios.post('/api/gen/txt2img', payload);
       const data: BetterUserPromptResult = response.data;
-      setGenerationHistory([data, ...generationHistory]);
+      setGenerationHistory((prev) => [data, ...prev]);
     } catch (error) {
       console.error(error);
     }

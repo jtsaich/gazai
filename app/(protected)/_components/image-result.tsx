@@ -10,12 +10,14 @@ interface ImageResultProps extends React.HTMLAttributes<HTMLDivElement> {
   image: string;
   width?: number;
   height?: number;
+  imageAsGuide?: (image: string) => void;
 }
 export function ImageResult({
   image,
   className,
   width,
   height,
+  imageAsGuide,
   ...props
 }: ImageResultProps) {
   return (
@@ -33,8 +35,14 @@ export function ImageResult({
           </div>
         </ContextMenuTrigger>
         <ContextMenuContent className="w-40">
-          <ContextMenuItem>Use this as guide</ContextMenuItem>
-          <ContextMenuItem>Download</ContextMenuItem>
+          <ContextMenuItem onClick={() => imageAsGuide?.(image)}>
+            Use this as guide
+          </ContextMenuItem>
+          <ContextMenuItem asChild>
+            <a href={image} download="image.png">
+              Download
+            </a>
+          </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
     </div>

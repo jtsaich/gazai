@@ -1,6 +1,10 @@
 import prisma from '@/lib/prisma';
 
-export const getUserPromptResultByUserId = async (userId: string) => {
+export const getUserPromptResultByUserId = async (
+  userId: string,
+  from: number = 0,
+  limit: number = 5
+) => {
   try {
     const userPromptResult = await prisma.userPromptResult.findMany({
       where: {
@@ -10,11 +14,14 @@ export const getUserPromptResultByUserId = async (userId: string) => {
       },
       orderBy: {
         createdAt: 'desc'
-      }
+      },
+      skip: from,
+      take: limit
     });
 
     return userPromptResult;
-  } catch {
-    return null;
+  } catch (e) {
+    console.error(e);
+    return [];
   }
 };

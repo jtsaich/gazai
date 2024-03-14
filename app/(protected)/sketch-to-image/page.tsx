@@ -31,6 +31,7 @@ export default function SketchToImage() {
     control,
     handleSubmit,
     register,
+    setValue,
     formState: { errors, isSubmitting }
   } = useForm<SketchToImageFormValues>({
     defaultValues: {
@@ -53,14 +54,16 @@ export default function SketchToImage() {
       try {
         const response = await axios.get('/api/user-prompt-result');
         const data: BetterUserPromptResult[] = response.data;
-        setGenerationHistory(data);
+        if (data) {
+          setGenerationHistory((prev) => [...prev, ...data]);
+        }
       } catch (error) {
         console.error(error);
       }
     };
 
     fetchGenerationHistory();
-  });
+  }, []);
 
   const onSubmit = async (data: SketchToImageFormValues) => {
     let prompt = data.prompt;
@@ -101,7 +104,7 @@ export default function SketchToImage() {
     try {
       const response = await axios.post(url, payload);
       const data: BetterUserPromptResult = response.data;
-      setGenerationHistory([data, ...generationHistory]);
+      setGenerationHistory((prev) => [data, ...prev]);
     } catch (error) {
       console.error(error);
     }
@@ -191,7 +194,7 @@ export default function SketchToImage() {
               <div className="p-10">
                 <div className="flex flex-col gap-4 pb-4">
                   <Input label="Prompt" {...register('prompt')} />
-                  <button className="btn btn-primary max-w-xs">
+                  <button type="button" className="btn btn-primary max-w-xs">
                     Generate random prompt
                   </button>
                   <Input
@@ -205,6 +208,7 @@ export default function SketchToImage() {
                     render={({ field }) => (
                       <DrawingCanvas
                         setCanvasOutput={(dataUrl) => field.onChange(dataUrl)}
+                        guidedImage={field.value}
                       />
                     )}
                     control={control}
@@ -223,7 +227,12 @@ export default function SketchToImage() {
                 <div className="flex flex-col gap-y-4">
                   {generationHistory.map((history, i) => (
                     <div key={i}>
-                      <GenerationHistory history={history} />
+                      <GenerationHistory
+                        history={history}
+                        imageAsGuide={(image) => {
+                          setValue('inputImage', image);
+                        }}
+                      />
                       <Separator className="my-4" />
                     </div>
                   ))}

@@ -3,9 +3,11 @@ import { ImageResult } from './image-result';
 import { BetterUserPromptResult } from '../_types';
 
 export default function GenerationHistory({
-  history
+  history,
+  imageAsGuide
 }: {
   history: BetterUserPromptResult;
+  imageAsGuide?: (image: string) => void;
 }) {
   return (
     <div className="relative">
@@ -20,6 +22,7 @@ export default function GenerationHistory({
               image={`data:image/jpeg;base64,${base64}`}
               width={history.parameters.width}
               height={history.parameters.height}
+              imageAsGuide={imageAsGuide}
             />
           ))}
         </div>
