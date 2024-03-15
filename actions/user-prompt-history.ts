@@ -11,6 +11,7 @@ export const userPromptHistoryData = (
   user: User
 ) => ({
   ...data,
+  seed: BigInt(data.seed),
   user: {
     connect: {
       id: user.id
