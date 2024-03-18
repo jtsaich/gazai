@@ -33,7 +33,7 @@ export default async function ProtectedLayout({
   const session = await auth();
   return (
     <SessionProvider session={session}>
-      <div className="hidden flex-col md:flex">
+      <div className="h-screen">
         <div className="border-b">
           <div className="flex h-16 items-center px-4">
             <Sheet>
@@ -57,7 +57,7 @@ export default async function ProtectedLayout({
             </div>
           </div>
         </div>
-        <div>{children}</div>
+        <div className="h-[calc(100vh-theme(space.16)-1px)]">{children}</div>
       </div>
     </SessionProvider>
   );

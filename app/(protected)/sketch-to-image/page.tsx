@@ -122,96 +122,101 @@ export default function SketchToImage() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <ResizablePanelGroup direction="horizontal" className="w-full h-screen">
-          <ResizablePanel defaultSize={20} className="h-screen">
-            <div className="flex flex-col h-full w-full min-w-[300px] p-10 gap-2">
-              <FormField
-                control={form.control}
-                name="inference"
-                render={({ field }) => (
-                  <FormItemSelect
-                    label="推論モード"
-                    options={[
-                      { label: 'i2i', value: 'i2i' },
-                      { label: 't2i-scribble', value: 't2i-scribble' },
-                      { label: 'coloring', value: 'coloring' }
-                    ]}
-                    value={String(field.value)}
-                    onChange={field.onChange}
-                  />
-                )}
-              />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="h-full">
+        <ResizablePanelGroup direction="horizontal" className="w-full">
+          <ResizablePanel defaultSize={20}>
+            <div className="w-full min-w-[300px] h-full flex flex-col justify-between">
+              <div className="flex flex-col p-10 gap-4">
+                <FormField
+                  control={form.control}
+                  name="inference"
+                  render={({ field }) => (
+                    <FormItemSelect
+                      label="推論モード"
+                      options={[
+                        { label: 'i2i', value: 'i2i' },
+                        { label: 't2i-scribble', value: 't2i-scribble' },
+                        { label: 'coloring', value: 'coloring' }
+                      ]}
+                      value={String(field.value)}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="batchSize"
-                render={({ field }) => (
-                  <NumberOfImages
-                    value={Number(field.value)}
-                    onChange={field.onChange}
-                  />
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="batchSize"
+                  render={({ field }) => (
+                    <NumberOfImages
+                      value={Number(field.value)}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="loraSelections"
-                render={({ field }) => (
-                  <ModelSelect value={field.value} onChange={field.onChange} />
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="loraSelections"
+                  render={({ field }) => (
+                    <ModelSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="width"
-                render={({ field }) => (
-                  <FormItemSelect
-                    label="Output image size"
-                    options={[
-                      { label: '1024', value: '1024' },
-                      { label: '768', value: '768' },
-                      { label: '512', value: '512' }
-                    ]}
-                    value={String(field.value)}
-                    onChange={field.onChange}
-                  />
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="width"
+                  render={({ field }) => (
+                    <FormItemSelect
+                      label="Output image size"
+                      options={[
+                        { label: '1024', value: '1024' },
+                        { label: '768', value: '768' },
+                        { label: '512', value: '512' }
+                      ]}
+                      value={String(field.value)}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="cfgScale"
-                render={({ field }) => (
-                  <Range
-                    label="cfg"
-                    value={field.value}
-                    onChange={field.onChange}
-                    min={0}
-                    max={20}
-                  />
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="cfgScale"
+                  render={({ field }) => (
+                    <Range
+                      label="cfg"
+                      value={field.value}
+                      onChange={field.onChange}
+                      min={0}
+                      max={20}
+                    />
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="denoisingStrength"
-                render={({ field }) => (
-                  <Range
-                    label="ノイズ除去の強さ"
-                    value={field.value}
-                    onChange={field.onChange}
-                    min={0.1}
-                    max={1.0}
-                    step={0.05}
-                  />
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="denoisingStrength"
+                  render={({ field }) => (
+                    <Range
+                      label="ノイズ除去の強さ"
+                      value={field.value}
+                      onChange={field.onChange}
+                      min={0.1}
+                      max={1.0}
+                      step={0.05}
+                    />
+                  )}
+                />
+              </div>
 
               <Button
                 type="submit"
                 disabled={form.formState.isSubmitting}
-                className={'mt-4'}
+                className="w-full rounded-none"
               >
                 {form.formState.isSubmitting ? (
                   <>
@@ -225,7 +230,7 @@ export default function SketchToImage() {
             </div>
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel defaultSize={80} className="h-screen">
+          <ResizablePanel defaultSize={80}>
             <main className="flex flex-col h-full w-full">
               <ScrollArea>
                 <div className="p-10">
@@ -238,7 +243,7 @@ export default function SketchToImage() {
                       )}
                     />
 
-                    <Button>Generate random prompt</Button>
+                    <Button type="button">Generate random prompt</Button>
 
                     <FormField
                       control={form.control}

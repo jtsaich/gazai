@@ -15,7 +15,7 @@ import FormItemInput from '@/components/form/form-item-input';
 import Spinner from '../spinner';
 import FormError from '../form-error';
 import FormSuccess from '../form-success';
-import { Button } from '../ui/button';
+import { Button, buttonVariants } from '../ui/button';
 import { Form, FormField } from '../ui/form';
 
 const RegisterForm = () => {
@@ -138,7 +138,10 @@ const RegisterForm = () => {
 
             <div className="text-center">
               Already have an account?{' '}
-              <Link href="/auth/login" className="link">
+              <Link
+                href="/auth/login"
+                className={buttonVariants({ variant: 'link' })}
+              >
                 Sign in
               </Link>
             </div>

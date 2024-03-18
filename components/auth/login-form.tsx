@@ -16,7 +16,7 @@ import FormError from '../form-error';
 import FormSuccess from '../form-success';
 import FormItemInput from '../form/form-item-input';
 import Spinner from '../spinner';
-import { Button } from '../ui/button';
+import { Button, buttonVariants } from '../ui/button';
 import { Form, FormField } from '../ui/form';
 
 import Social from './social';
@@ -135,7 +135,10 @@ const LoginForm = () => {
                     />
                   )}
                 />
-                <Link href="/auth/reset" className="link">
+                <Link
+                  href="/auth/reset"
+                  className={buttonVariants({ variant: 'link' })}
+                >
                   Forgot your password?
                 </Link>
               </>
@@ -162,7 +165,9 @@ const LoginForm = () => {
           <span className="w-full border-t"></span>
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-base-100 px-2">Or continue with</span>
+          <span className="bg-background px-2 text-muted-foreground">
+            Or continue with
+          </span>
         </div>
       </div>
 
@@ -170,7 +175,10 @@ const LoginForm = () => {
 
       <div className="text-center">
         Need an account?{' '}
-        <Link href="/auth/register" className="link">
+        <Link
+          href="/auth/register"
+          className={buttonVariants({ variant: 'link' })}
+        >
           Sign up
         </Link>
       </div>

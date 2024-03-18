@@ -19,7 +19,7 @@ const Social = () => {
   return (
     <div className="flex items-center w-full gap-x-2">
       <Button className="w-full" onClick={() => onClick('google')}>
-        <GrGoogle />
+        <GrGoogle className="mr-2" /> Login with Google
       </Button>
     </div>
   );
