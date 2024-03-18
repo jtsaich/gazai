@@ -1,12 +1,14 @@
 'use server';
 
 import * as z from 'zod';
+
 import prisma from '@/lib/prisma';
 import {
   UserPromptHistoryCreateInputSchema,
   UserPromptResultCreateInputSchema
 } from '@/prisma/generated/zod';
 import { auth } from '@/auth';
+
 import { userPromptHistoryData } from './user-prompt-history';
 
 export const createUserPromptResultWithHistory = async (

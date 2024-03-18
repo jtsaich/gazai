@@ -3,6 +3,9 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
+
 import { LoRAs } from '@/app/constants';
 import Range from '@/components/form/range';
 import DrawingCanvas from '@/components/drawingCanvas';
@@ -11,24 +14,23 @@ import {
   ResizablePanel,
   ResizableHandle
 } from '@/components/ui/resizable';
-import NumberOfImages from '../_components/number-of-images';
-import ModelSelect from '../_components/model-select';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { SketchToImageSchema, SketchToImageFormValues } from '@/schemas';
+import { Separator } from '@/components/ui/separator';
+import { isTrue } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Form, FormField } from '@/components/ui/form';
+import FormItemSelect from '@/components/form/form-item-select';
+import FormItemTextarea from '@/components/form/form-item-textarea';
+
+import GenerationHistory from '../_components/generation-history';
 import {
   BetterUserPromptResult,
   isBetterUserPromptResult,
   isBetterUserPromptResultArray
 } from '../_types';
-import { Separator } from '@/components/ui/separator';
-import GenerationHistory from '../_components/generation-history';
-import { isTrue } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
-import { Form, FormField } from '@/components/ui/form';
-import FormItemSelect from '@/components/form/form-item-select';
-import FormItemTextarea from '@/components/form/form-item-textarea';
+import ModelSelect from '../_components/model-select';
+import NumberOfImages from '../_components/number-of-images';
 
 const enableTranslation = isTrue(process.env.NEXT_PUBLIC_ENABLE_TRANSLATION);
 
@@ -123,7 +125,7 @@ export default function SketchToImage() {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <ResizablePanelGroup direction="horizontal" className="w-full h-screen">
           <ResizablePanel defaultSize={20} className="h-screen">
-            <div className="flex flex-col h-full w-full min-w-[300px] p-10">
+            <div className="flex flex-col h-full w-full min-w-[300px] p-10 gap-2">
               <FormField
                 control={form.control}
                 name="inference"

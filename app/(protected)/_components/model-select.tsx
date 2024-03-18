@@ -1,7 +1,8 @@
+import { Listbox } from '@headlessui/react';
+
 import { LoRAs } from '@/app/constants';
 import { Badge } from '@/components/ui/badge';
 import { FormControl, FormItem, FormLabel } from '@/components/ui/form';
-import { Listbox } from '@headlessui/react';
 
 export default function ModelSelect({
   value,

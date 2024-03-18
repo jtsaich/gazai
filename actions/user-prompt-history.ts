@@ -1,10 +1,11 @@
 'use server';
 
 import * as z from 'zod';
+import type { User } from 'next-auth';
+
 import prisma from '@/lib/prisma';
 import { UserPromptHistoryCreateInputSchema } from '@/prisma/generated/zod';
 import { auth } from '@/auth';
-import type { User } from 'next-auth';
 
 export const userPromptHistoryData = (
   data: Omit<z.infer<typeof UserPromptHistoryCreateInputSchema>, 'user'>,

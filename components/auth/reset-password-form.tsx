@@ -4,16 +4,16 @@ import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { useState, useTransition } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
 
 import { ResetSchema } from '@/schemas';
-
 import FormError from '@/components/form-error';
 import FormSuccess from '@/components/form-success';
 import { reset } from '@/actions/reset';
-import FormItemInput from '../form/form-item-input';
-import { Button } from '../ui/button';
-import { Loader2 } from 'lucide-react';
+
 import { Form, FormField } from '../ui/form';
+import { Button } from '../ui/button';
+import FormItemInput from '../form/form-item-input';
 
 const ResetPasswordForm = () => {
   const [error, setError] = useState<string | undefined>('');

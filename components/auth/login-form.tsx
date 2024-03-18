@@ -6,19 +6,20 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
+import { Loader2 } from 'lucide-react';
 
-import { useIsClient } from '@/hooks/use-is-client';
+import { login } from '@/actions/login';
 import { LoginSchema } from '@/schemas';
+import { useIsClient } from '@/hooks/use-is-client';
 
 import FormError from '../form-error';
 import FormSuccess from '../form-success';
-import { login } from '@/actions/login';
 import FormItemInput from '../form/form-item-input';
 import Spinner from '../spinner';
-import Social from './social';
 import { Button } from '../ui/button';
-import { Loader2 } from 'lucide-react';
 import { Form, FormField } from '../ui/form';
+
+import Social from './social';
 
 const LoginForm = () => {
   const searchParams = useSearchParams();

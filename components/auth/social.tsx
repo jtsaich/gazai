@@ -5,6 +5,7 @@ import { signIn } from 'next-auth/react';
 import { GrGoogle } from 'react-icons/gr';
 
 import { DEFAULT_LOGIN_REDIRECT } from '@/routes';
+
 import { Button } from '../ui/button';
 
 const Social = () => {

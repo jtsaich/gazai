@@ -29,5 +29,19 @@ module.exports = {
     sourceType: 'module'
   },
   plugins: ['@typescript-eslint', 'react'],
-  rules: {}
+  rules: {
+    'import/order': [
+      'error',
+      {
+        'newlines-between': 'always',
+        pathGroups: [
+          {
+            pattern: '@/**',
+            group: 'external',
+            position: 'after'
+          }
+        ]
+      }
+    ]
+  }
 };

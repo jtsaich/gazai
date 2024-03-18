@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { useState, useTransition } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
 
 import { NewPasswordSchema } from '@/schemas';
 import { Form, FormField } from '@/components/ui/form';
@@ -12,8 +13,8 @@ import { newPassword } from '@/actions/new-password';
 import { Button } from '@/components/ui/button';
 import FormError from '@/components/form-error';
 import FormSuccess from '@/components/form-success';
+
 import FormItemInput from '../form/form-item-input';
-import { Loader2 } from 'lucide-react';
 
 const NewPasswordForm = () => {
   const searchParams = useSearchParams();

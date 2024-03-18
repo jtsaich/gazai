@@ -1,6 +1,8 @@
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { ImageResult } from './image-result';
+
 import { BetterUserPromptResult } from '../_types';
+
+import { ImageResult } from './image-result';
 
 export default function GenerationHistory({
   history,

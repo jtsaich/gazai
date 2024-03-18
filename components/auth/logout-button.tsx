@@ -1,9 +1,11 @@
 'use client';
 
-import { logout } from '@/actions/logout';
 import { useToggle } from '@uidotdev/usehooks';
-import { Button } from '../ui/button';
 import { Loader2 } from 'lucide-react';
+
+import { logout } from '@/actions/logout';
+
+import { Button } from '../ui/button';
 
 const LogoutButton = ({
   className,

@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react';
 import axios, { isAxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 
 import { LoRAs } from '@/app/constants';
 import {
@@ -12,25 +15,23 @@ import {
 } from '@/components/ui/resizable';
 import Range from '@/components/form/range';
 import FormItemSelect from '@/components/form/form-item-select';
-import NumberOfImages from '../_components/number-of-images';
-import ModelSelect from '../_components/model-select';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { TextToImageSchema } from '@/schemas';
+import { Separator } from '@/components/ui/separator';
+import { isTrue } from '@/lib/utils';
+import { Form, FormField } from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+import FormItemTextarea from '@/components/form/form-item-textarea';
+
+import GenerationHistory from '../_components/generation-history';
 import {
   TextToImageFormValues,
   BetterUserPromptResult,
   isBetterUserPromptResult,
   isBetterUserPromptResultArray
 } from '../_types';
-import GenerationHistory from '../_components/generation-history';
-import { Separator } from '@/components/ui/separator';
-import { isTrue } from '@/lib/utils';
-import { toast } from 'sonner';
-import { Form, FormField } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
-import FormItemTextarea from '@/components/form/form-item-textarea';
+import ModelSelect from '../_components/model-select';
+import NumberOfImages from '../_components/number-of-images';
 
 const enableTranslation = isTrue(process.env.NEXT_PUBLIC_ENABLE_TRANSLATION);
 

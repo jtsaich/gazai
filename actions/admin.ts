@@ -1,9 +1,10 @@
 'use server';
 
-import { currentRole } from '@/lib/auth';
-import prisma from '@/lib/prisma';
 import { UserRole } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
+
+import { currentRole } from '@/lib/auth';
+import prisma from '@/lib/prisma';
 
 export const admin = async () => {
   const role = await currentRole();

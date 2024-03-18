@@ -4,17 +4,18 @@ import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+import { Loader2 } from 'lucide-react';
 
 import { useIsClient } from '@/hooks/use-is-client';
-import Spinner from '../spinner';
 import { RegisterSchema } from '@/schemas';
-import FormError from '../form-error';
-import FormSuccess from '../form-success';
 import { register } from '@/actions/register';
 import FormItemInput from '@/components/form/form-item-input';
-import Link from 'next/link';
+
+import Spinner from '../spinner';
+import FormError from '../form-error';
+import FormSuccess from '../form-success';
 import { Button } from '../ui/button';
-import { Loader2 } from 'lucide-react';
 import { Form, FormField } from '../ui/form';
 
 const RegisterForm = () => {

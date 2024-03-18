@@ -1,8 +1,9 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 import InfiniteScrollCard from './_components/infinite-scroll-card';
 
-import { useEffect, useState } from 'react';
 
 type Image = {
   id: string;

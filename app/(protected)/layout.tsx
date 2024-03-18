@@ -1,7 +1,6 @@
 import { SessionProvider } from 'next-auth/react';
-
-import { auth } from '@/auth';
 import { Menu } from 'lucide-react';
+
 import {
   Sheet,
   SheetContent,
@@ -10,6 +9,8 @@ import {
   SheetTitle,
   SheetTrigger
 } from '@/components/ui/sheet';
+import { auth } from '@/auth';
+
 import { SidebarNav } from './_components/sidebar-nav';
 import { UserNav } from './_components/user-nav';
 

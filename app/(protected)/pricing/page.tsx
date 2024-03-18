@@ -1,5 +1,9 @@
 'use client';
 
+import { CheckCircle2 } from 'lucide-react';
+import { useState } from 'react';
+import Link from 'next/link';
+
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Card,
@@ -9,11 +13,8 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import { CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
 
 type PricingSwitchProps = {
   onSwitch: (value: string) => void;

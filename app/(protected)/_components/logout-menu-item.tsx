@@ -1,9 +1,10 @@
 'use client';
 
-import { logout } from '@/actions/logout';
-import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { useToggle } from '@uidotdev/usehooks';
 import { Loader2 } from 'lucide-react';
+
+import { logout } from '@/actions/logout';
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 
 const LogoutMenuItem = () => {
   const [loggingOut, toggleLoggingOut] = useToggle(false);

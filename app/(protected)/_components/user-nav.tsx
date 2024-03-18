@@ -1,3 +1,5 @@
+import type { User } from 'next-auth';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,9 +12,9 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import LogoutMenuItem from './logout-menu-item';
 import { auth } from '@/auth';
-import type { User } from 'next-auth';
+
+import LogoutMenuItem from './logout-menu-item';
 
 export async function UserNav() {
   const session = await auth();

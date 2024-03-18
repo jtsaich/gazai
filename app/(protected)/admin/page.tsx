@@ -1,8 +1,9 @@
 import { cache } from 'react';
-import SetAsAdminButton from '../../../components/setAsAdminButton';
+import { UserRole } from '@prisma/client';
+
 import prisma from '@/lib/prisma';
 import RoleGate from '@/components/auth/role-gate';
-import { UserRole } from '@prisma/client';
+import SetAsAdminButton from '@/components/setAsAdminButton';
 
 const getUsers = cache(async () => {
   const users = await prisma.user.findMany();
