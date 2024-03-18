@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import LogoutMenuItem from './logout-menu-item';
 import { auth } from '@/auth';
-import { User } from 'next-auth';
+import type { User } from 'next-auth';
 
 export async function UserNav() {
   const session = await auth();

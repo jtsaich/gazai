@@ -4,7 +4,7 @@ import * as z from 'zod';
 import prisma from '@/lib/prisma';
 import { UserPromptHistoryCreateInputSchema } from '@/prisma/generated/zod';
 import { auth } from '@/auth';
-import { User } from 'next-auth';
+import type { User } from 'next-auth';
 
 export const userPromptHistoryData = (
   data: Omit<z.infer<typeof UserPromptHistoryCreateInputSchema>, 'user'>,
