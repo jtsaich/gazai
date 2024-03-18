@@ -25,11 +25,11 @@ export function ImageResult({
       <ContextMenu>
         <ContextMenuTrigger>
           <div className="overflow-hidden rounded-md">
-            <Image
+            <img
               src={image}
               alt={''}
-              width={width}
-              height={height}
+              // width={width}
+              // height={height}
               className="h-80 w-auto object-cover transition-all hover:scale-105 aspect-square"
             />
           </div>

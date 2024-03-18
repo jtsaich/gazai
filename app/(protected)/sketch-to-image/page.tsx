@@ -63,7 +63,7 @@ export default function SketchToImage() {
         const data = response.data;
 
         if (data && isBetterUserPromptResultArray(data)) {
-          setGenerationHistory((prev) => [...prev, ...data]);
+          setGenerationHistory(data);
         }
       } catch (error) {
         console.error(error);
