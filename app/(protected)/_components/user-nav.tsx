@@ -17,7 +17,6 @@ import type { User } from 'next-auth';
 export async function UserNav() {
   const session = await auth();
   const user: User = session?.user;
-  console.debug(user);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
