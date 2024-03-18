@@ -1,12 +1,11 @@
 import humps from 'humps';
 
-import { getRandomSeed } from '@/lib/utils';
+import { getRandomSeed, isTrue } from '@/lib/utils';
 import { createUserPromptResultWithHistory } from '@/actions/user-prompt-result';
 import { UserPromptHistory } from '@/prisma/generated/zod';
 
 import { v4 as uuidv4 } from 'uuid';
 import { uploadObject } from '@/lib/s3';
-import { isTrue } from '@/lib/utils';
 
 // testing
 import { MockSDResponse } from '@/mocks/SDResponse';

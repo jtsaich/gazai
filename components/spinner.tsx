@@ -1,5 +1,7 @@
+import { Loader2 } from 'lucide-react';
+
 function Spinner() {
-  return <span className="loading loading-spinner loading-lg"></span>;
+  return <Loader2 className="h-4 w-4 animate-spin" />;
 }
 
 export default Spinner;

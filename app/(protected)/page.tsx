@@ -8,8 +8,22 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 
+type Image = {
+  id: string;
+  urls: {
+    regular: string;
+  };
+  alt_description: string;
+  user: {
+    name: string;
+  };
+  links: {
+    html: string;
+  };
+};
+
 export default function IndexPage() {
-  const [images, setImages] = useState<any>([]);
+  const [images, setImages] = useState<Image[]>([]);
   const [page, setPage] = useState(1);
 
   const fetchImages = async () => {
@@ -22,7 +36,7 @@ export default function IndexPage() {
       }
     );
     const { results } = await response.json();
-    setImages((prev: any) => [...prev, ...results]);
+    setImages((prev: Image[]) => [...prev, ...results]);
   };
 
   useEffect(() => {
@@ -46,13 +60,12 @@ export default function IndexPage() {
         </LogoutButton>
       </div>
       <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {images.map((image: any, index: number) => (
+        {images.map((image: Image, index: number) => (
           <InfiniteScrollCard
             key={image.id}
             imgSrc={image.urls.regular}
             imgAlt={image.alt_description}
             shotBy={image.user.name}
-            creditUrl={image.links.html}
             isLast={index === images.length - 1}
             newLimit={() => setPage(page + 1)}
           />

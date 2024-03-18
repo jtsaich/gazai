@@ -4,7 +4,6 @@ import {
   ContextMenuItem,
   ContextMenuTrigger
 } from '@/components/ui/context-menu';
-import Image from 'next/image';
 
 interface ImageResultProps extends React.HTMLAttributes<HTMLDivElement> {
   image: string;
@@ -15,8 +14,6 @@ interface ImageResultProps extends React.HTMLAttributes<HTMLDivElement> {
 export function ImageResult({
   image,
   className,
-  width,
-  height,
   imageAsGuide,
   ...props
 }: ImageResultProps) {
@@ -28,8 +25,6 @@ export function ImageResult({
             <img
               src={image}
               alt={''}
-              // width={width}
-              // height={height}
               className="h-80 w-auto object-cover transition-all hover:scale-105 aspect-square"
             />
           </div>

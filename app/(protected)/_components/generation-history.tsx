@@ -18,7 +18,7 @@ export default function GenerationHistory({
           {parameters.prompt}
         </p>
         <div className="flex space-x-4 pb-4">
-          {images.map((objectKey, i) => (
+          {images.map((objectKey) => (
             <ImageResult
               key={`generated-${objectKey}`}
               image={`/api/image/${objectKey}`}

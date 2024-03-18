@@ -9,6 +9,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
     'plugin:react/jsx-runtime',
+    'plugin:import/recommended',
     'next/core-web-vitals'
   ],
   overrides: [

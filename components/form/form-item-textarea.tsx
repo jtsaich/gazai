@@ -5,7 +5,7 @@ interface FormIemTextareaProps {
   label?: string;
 }
 
-const FormItemInput = ({ label, ...rest }: FormIemTextareaProps) => (
+const FormItemTextarea = ({ label, ...rest }: FormIemTextareaProps) => (
   <FormItem>
     {label && <FormLabel>{label}</FormLabel>}
     <FormControl>
@@ -14,4 +14,4 @@ const FormItemInput = ({ label, ...rest }: FormIemTextareaProps) => (
   </FormItem>
 );
 
-export default FormItemInput;
+export default FormItemTextarea;

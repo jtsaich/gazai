@@ -8,7 +8,7 @@ export type BetterUserPromptResult = UserPromptResult & {
 };
 
 export function isBetterUserPromptResult(
-  obj: any
+  obj: unknown
 ): obj is BetterUserPromptResult {
   return (
     typeof obj === 'object' &&
@@ -26,7 +26,7 @@ export function isBetterUserPromptResult(
 }
 
 export function isBetterUserPromptResultArray(
-  obj: any
+  obj: unknown
 ): obj is BetterUserPromptResult[] {
   return Array.isArray(obj) && obj.every(isBetterUserPromptResult);
 }

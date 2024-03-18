@@ -18,6 +18,7 @@ import Spinner from '../spinner';
 import Social from './social';
 import { Button } from '../ui/button';
 import { Loader2 } from 'lucide-react';
+import { Form, FormField } from '../ui/form';
 
 const LoginForm = () => {
   const searchParams = useSearchParams();
@@ -81,59 +82,80 @@ const LoginForm = () => {
         <h1 className="text-2xl font-semibold tracking-tight">Login</h1>
       </div>
       <div className="grid gap-6"></div>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-y-6"
-      >
-        <div className="flex flex-col gap-y-4">
-          {showTwoFactor && (
-            <FormItemInput
-              label="Two Factor Authentication Code"
-              disabled={isPending}
-              placeholder="123456"
-              autoComplete="one-time-code"
-              {...form.register('code')}
-            />
-          )}
-          {!showTwoFactor && (
-            <>
-              <FormItemInput
-                label="Email"
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col gap-y-6"
+        >
+          <div className="flex flex-col gap-y-4">
+            {showTwoFactor && (
+              <FormField
+                control={form.control}
+                name="code"
                 disabled={isPending}
-                type="email"
-                placeholder="your.email@example.com"
-                autoComplete="email"
-                {...form.register('email')}
+                render={(field) => (
+                  <FormItemInput
+                    label="Two Factor Authentication Code"
+                    placeholder="123456"
+                    autoComplete="one-time-code"
+                    {...field}
+                  />
+                )}
               />
-              <FormItemInput
-                label="Password"
-                disabled={isPending}
-                type="password"
-                placeholder="your.email@example.com"
-                autoComplete="current-password"
-                {...form.register('password')}
-              />
-              <Link href="/auth/reset" className="link">
-                Forgot your password?
-              </Link>
-            </>
-          )}
-        </div>
-        {error && <FormError message={error || urlError} />}
-        {success && <FormSuccess message={success} />}
-        <Button type="submit" disabled={isPending} className="w-full">
-          {isPending ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Please wait
-            </>
-          ) : showTwoFactor ? (
-            'Confirm'
-          ) : (
-            'Login'
-          )}
-        </Button>
-      </form>
+            )}
+            {!showTwoFactor && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="email"
+                  disabled={isPending}
+                  render={(field) => (
+                    <FormItemInput
+                      label="Email"
+                      type="email"
+                      placeholder="your.email@example.com"
+                      autoComplete="email"
+                      {...field}
+                    />
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  disabled={isPending}
+                  render={(field) => (
+                    <FormItemInput
+                      label="Password"
+                      disabled={isPending}
+                      type="password"
+                      placeholder="your.email@example.com"
+                      autoComplete="current-password"
+                      {...field}
+                    />
+                  )}
+                />
+                <Link href="/auth/reset" className="link">
+                  Forgot your password?
+                </Link>
+              </>
+            )}
+          </div>
+          {error && <FormError message={error || urlError} />}
+          {success && <FormSuccess message={success} />}
+          <Button type="submit" disabled={isPending} className="w-full">
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Please wait
+              </>
+            ) : showTwoFactor ? (
+              'Confirm'
+            ) : (
+              'Login'
+            )}
+          </Button>
+        </form>
+      </Form>
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t"></span>

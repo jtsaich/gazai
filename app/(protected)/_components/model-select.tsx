@@ -6,13 +6,13 @@ export default function ModelSelect({
   onChange
 }: {
   value: { id: string; name: string }[];
-  onChange: (val: any) => void;
+  onChange: (val: unknown) => void;
 }) {
   return (
     <label className="form-control w-full max-w-xs">
       <Listbox
         defaultValue={value}
-        by={(a, b) => a.id === b.id}
+        by={(a: { id: string }, b: { id: string }) => a.id === b.id}
         onChange={onChange}
         multiple
       >
@@ -22,7 +22,7 @@ export default function ModelSelect({
           </Listbox.Label>
         </div>
         <Listbox.Button className="input input-bordered w-full max-w-xs h-auto min-h-[3rem] text-left py-2">
-          {({ open }) => (
+          {() => (
             <>
               {value.map((lora) => (
                 <span

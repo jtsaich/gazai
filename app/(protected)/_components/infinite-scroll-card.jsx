@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 
 export default function InfiniteScrollCard({
-  creditUrl,
   imgAlt = 'placeholder',
   imgSrc = '/placeholder.jpg',
   shotBy,

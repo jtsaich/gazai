@@ -1,7 +1,7 @@
 import { FormControl, FormItem, FormLabel } from '../ui/form';
-import { Input } from '../ui/input';
+import { Input, InputProps } from '../ui/input';
 
-interface FormIemInputProps {
+interface FormIemInputProps extends InputProps {
   label?: string;
 }
 

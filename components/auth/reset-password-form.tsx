@@ -13,6 +13,7 @@ import { reset } from '@/actions/reset';
 import FormItemInput from '../form/form-item-input';
 import { Button } from '../ui/button';
 import { Loader2 } from 'lucide-react';
+import { Form, FormField } from '../ui/form';
 
 const ResetPasswordForm = () => {
   const [error, setError] = useState<string | undefined>('');
@@ -46,30 +47,38 @@ const ResetPasswordForm = () => {
         </h1>
       </div>
       <div className="grid gap-6">
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-y-6"
-        >
-          <FormItemInput
-            label="Email"
-            disabled={isPending}
-            placeholder="your.email@example.com"
-            type="email"
-            {...form.register('email')}
-          />
-          {error && <FormError message={error} />}
-          {success && <FormSuccess message={success} />}
-          <Button disabled={isPending} type="submit" className="w-full">
-            {isPending ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Please wait
-              </>
-            ) : (
-              'Send reset password email'
-            )}
-          </Button>
-        </form>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col gap-y-6"
+          >
+            <FormField
+              control={form.control}
+              name="email"
+              disabled={isPending}
+              render={({ field }) => (
+                <FormItemInput
+                  label="Email"
+                  placeholder="your.email@example.com"
+                  type="email"
+                  {...field}
+                />
+              )}
+            />
+            {error && <FormError message={error} />}
+            {success && <FormSuccess message={success} />}
+            <Button disabled={isPending} type="submit" className="w-full">
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Please wait
+                </>
+              ) : (
+                'Send reset password email'
+              )}
+            </Button>
+          </form>
+        </Form>
       </div>
     </div>
   );

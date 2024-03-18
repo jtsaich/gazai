@@ -1,7 +1,6 @@
 'use client';
 
 import { logout } from '@/actions/logout';
-import { cn } from '@/lib/utils';
 import { useToggle } from '@uidotdev/usehooks';
 import { Button } from '../ui/button';
 import { Loader2 } from 'lucide-react';

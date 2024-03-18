@@ -95,7 +95,7 @@ function DrawingCanvas({
 
       p.setup = function () {
         const { canvasWidth, canvasHeight } = updateCanvasDimensions();
-        const myCanvas = p.createCanvas(canvasWidth, canvasHeight);
+        p.createCanvas(canvasWidth, canvasHeight);
         scaleFactor = baseWidth / canvasWidth;
 
         // const x = (p.windowWidth - canvasWidth) / 2;
@@ -117,7 +117,7 @@ function DrawingCanvas({
     if (!guidedImage) {
       return;
     }
-    const img = myp5.current.loadImage(
+    myp5.current.loadImage(
       guidedImage,
       (img) => {
         console.debug('success');

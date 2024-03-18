@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { NewPasswordSchema } from '@/schemas';
-import { Form } from '@/components/ui/form';
+import { Form, FormField } from '@/components/ui/form';
 import { newPassword } from '@/actions/new-password';
 import { Button } from '@/components/ui/button';
 import FormError from '@/components/form-error';
@@ -57,21 +57,34 @@ const NewPasswordForm = () => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex flex-col gap-y-6"
           >
-            <FormItemInput
-              label="Password"
+            <FormField
+              control={form.control}
+              name="password"
               disabled={isPending}
-              type="password"
-              placeholder="******"
-              autoComplete="new-password"
-              {...form.register('password')}
+              render={(field) => (
+                <FormItemInput
+                  label="Password"
+                  type="password"
+                  placeholder="******"
+                  autoComplete="new-password"
+                  {...field}
+                />
+              )}
             />
-            <FormItemInput
-              label="Confirm your password"
+            <FormField
+              control={form.control}
+              name="passwordConfirmation"
               disabled={isPending}
-              type="password"
-              placeholder="******"
-              autoComplete="new-password"
-              {...form.register('passwordConfirmation')}
+              render={(field) => (
+                <FormItemInput
+                  label="Confirm your password"
+                  disabled={isPending}
+                  type="password"
+                  placeholder="******"
+                  autoComplete="new-password"
+                  {...field}
+                />
+              )}
             />
             {error && <FormError message={error} />}
             {success && <FormSuccess message={success} />}

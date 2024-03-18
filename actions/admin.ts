@@ -16,7 +16,7 @@ export const admin = async () => {
 };
 
 export async function setAsAdmin(id: string) {
-  const updateUser = await prisma.user.update({
+  await prisma.user.update({
     where: {
       id
     },

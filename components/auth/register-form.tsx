@@ -15,6 +15,7 @@ import FormItemInput from '@/components/form/form-item-input';
 import Link from 'next/link';
 import { Button } from '../ui/button';
 import { Loader2 } from 'lucide-react';
+import { Form, FormField } from '../ui/form';
 
 const RegisterForm = () => {
   const isClient = useIsClient();
@@ -60,62 +61,88 @@ const RegisterForm = () => {
         </p>
       </div>
       <div className="grid gap-6">
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-y-6"
-        >
-          <div className="flex flex-col gap-y-4">
-            <FormItemInput
-              label="Name"
-              disabled={isPending}
-              placeholder="Your Name"
-              {...form.register('name')}
-            />
-            <FormItemInput
-              label="Email"
-              disabled={isPending}
-              type="email"
-              placeholder="your.email@example.com"
-              autoComplete="email"
-              {...form.register('email')}
-            />
-            <FormItemInput
-              label="Password"
-              disabled={isPending}
-              type="password"
-              placeholder="******"
-              autoComplete="new-password"
-              {...form.register('password')}
-            />
-            <FormItemInput
-              label="Confirm your password"
-              disabled={isPending}
-              type="password"
-              placeholder="******"
-              autoComplete="new-password"
-              {...form.register('passwordConfirmation')}
-            />
-          </div>
-          {error && <FormError message={error} />}
-          {success && <FormSuccess message={success} />}
-          <Button type="submit" disabled={isPending} className="w-full">
-            {isPending ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Please wait
-              </>
-            ) : (
-              'Register'
-            )}
-          </Button>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col gap-y-6"
+          >
+            <div className="flex flex-col gap-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                disabled={isPending}
+                render={(field) => (
+                  <FormItemInput
+                    label="Name"
+                    placeholder="Your Name"
+                    {...field}
+                  />
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                disabled={isPending}
+                render={(field) => (
+                  <FormItemInput
+                    label="Email"
+                    type="email"
+                    placeholder="your.email@example.com"
+                    autoComplete="email"
+                    {...field}
+                  />
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                disabled={isPending}
+                render={(field) => (
+                  <FormItemInput
+                    label="Password"
+                    type="password"
+                    placeholder="******"
+                    autoComplete="new-password"
+                    {...field}
+                  />
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="passwordConfirmation"
+                disabled={isPending}
+                render={(field) => (
+                  <FormItemInput
+                    label="Confirm your password"
+                    type="password"
+                    placeholder="******"
+                    autoComplete="new-password"
+                    {...field}
+                  />
+                )}
+              />
+            </div>
+            {error && <FormError message={error} />}
+            {success && <FormSuccess message={success} />}
+            <Button type="submit" disabled={isPending} className="w-full">
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Please wait
+                </>
+              ) : (
+                'Register'
+              )}
+            </Button>
 
-          <div className="text-center">
-            Already have an account?{' '}
-            <Link href="/auth/login" className="link">
-              Sign in
-            </Link>
-          </div>
-        </form>
+            <div className="text-center">
+              Already have an account?{' '}
+              <Link href="/auth/login" className="link">
+                Sign in
+              </Link>
+            </div>
+          </form>
+        </Form>
       </div>
     </div>
   );
