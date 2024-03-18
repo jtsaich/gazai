@@ -86,6 +86,7 @@ export default function TextToImage() {
     const promptPrefix = data.loraSelections.map((lora) => lora.id).join('');
     prompt = promptPrefix + prompt;
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { loraSelections, ...payload } = {
       ...data,
       prompt

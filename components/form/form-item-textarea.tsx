@@ -1,4 +1,3 @@
-import React from 'react';
 import { FormControl, FormItem, FormLabel } from '../ui/form';
 import { Textarea } from '../ui/textarea';
 

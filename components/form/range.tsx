@@ -1,4 +1,4 @@
-import React, { ForwardedRef, InputHTMLAttributes } from 'react';
+import { ForwardedRef, InputHTMLAttributes } from 'react';
 import { Slider } from '../ui/slider';
 import { FormControl, FormItem, FormLabel } from '../ui/form';
 

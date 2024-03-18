@@ -1,4 +1,4 @@
-import React, { SelectHTMLAttributes } from 'react';
+import { SelectHTMLAttributes } from 'react';
 import { FormControl, FormItem, FormLabel } from '../ui/form';
 import {
   Select,

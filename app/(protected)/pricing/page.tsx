@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/card';
 import { CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 

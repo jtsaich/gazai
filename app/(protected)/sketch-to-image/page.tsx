@@ -1,12 +1,9 @@
 'use client';
 
 import axios from 'axios';
-import clsx from 'clsx';
 import { useEffect, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { LoRAs } from '@/app/constants';
-import Select from '@/components/form/form-item-select';
-import FormItemInput from '@/components/form/form-item-input';
 import Range from '@/components/form/range';
 import DrawingCanvas from '@/components/drawingCanvas';
 import {
@@ -89,6 +86,7 @@ export default function SketchToImage() {
     const promptPrefix = data.loraSelections.map((lora) => lora.id).join('');
     prompt = promptPrefix + data.prompt;
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { loraSelections, inference, inputImage, ...payload } = {
       ...data,
       prompt,
