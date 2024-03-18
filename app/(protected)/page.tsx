@@ -1,12 +1,8 @@
 'use client';
 
-import LogoutButton from '@/components/auth/logout-button';
 import InfiniteScrollCard from './_components/infinite-scroll-card';
-import { ArrowLeftOnRectangleIcon } from '@heroicons/react/20/solid';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
 
 type Image = {
   id: string;
@@ -46,19 +42,6 @@ export default function IndexPage() {
   return (
     <main className="p-12 lg:px-20">
       <h1 className="text-4xl font-bold mb-4">Start making art!</h1>
-
-      <div className="flex overflow-hidden rounded-md gap-4">
-        <Button asChild>
-          <Link href="/text-to-image">Image Generation</Link>
-        </Button>
-        <Button asChild>
-          <Link href="/sketch-to-image">Magic Paint</Link>
-        </Button>
-        <LogoutButton>
-          <ArrowLeftOnRectangleIcon className="h-4 w-4 mr-2" />
-          Logout
-        </LogoutButton>
-      </div>
       <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {images.map((image: Image, index: number) => (
           <InfiniteScrollCard

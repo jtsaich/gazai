@@ -1,17 +1,11 @@
 'use client';
 
 import { logout } from '@/actions/logout';
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { useToggle } from '@uidotdev/usehooks';
-import { Button } from '../ui/button';
 import { Loader2 } from 'lucide-react';
 
-const LogoutButton = ({
-  className,
-  children
-}: {
-  className?: string;
-  children: React.ReactNode;
-}) => {
+const LogoutMenuItem = () => {
   const [loggingOut, toggleLoggingOut] = useToggle(false);
   const handleLogout = () => {
     toggleLoggingOut();
@@ -20,22 +14,17 @@ const LogoutButton = ({
   };
 
   return (
-    <Button
-      onClick={handleLogout}
-      variant={'secondary'}
-      disabled={loggingOut}
-      className={className}
-    >
+    <DropdownMenuItem onClick={handleLogout}>
       {loggingOut ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           Please wait
         </>
       ) : (
-        children
+        'Logout'
       )}
-    </Button>
+    </DropdownMenuItem>
   );
 };
 
-export default LogoutButton;
+export default LogoutMenuItem;

@@ -1,6 +1,28 @@
 import { SessionProvider } from 'next-auth/react';
 
 import { auth } from '@/auth';
+import { Menu } from 'lucide-react';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger
+} from '@/components/ui/sheet';
+import { SidebarNav } from './_components/sidebar-nav';
+import { UserNav } from './_components/user-nav';
+
+const sidebarNavItems = [
+  {
+    title: 'Text to image',
+    href: '/text-to-image'
+  },
+  {
+    title: 'Image to image',
+    href: '/sketch-to-image'
+  }
+];
 
 export default async function ProtectedLayout({
   children
@@ -8,5 +30,34 @@ export default async function ProtectedLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
-  return <SessionProvider session={session}>{children}</SessionProvider>;
+  return (
+    <SessionProvider session={session}>
+      <div className="hidden flex-col md:flex">
+        <div className="border-b">
+          <div className="flex h-16 items-center px-4">
+            <Sheet>
+              <SheetTrigger>
+                <div className="flex flex-row gap-2">
+                  <Menu /> Gazai
+                </div>
+              </SheetTrigger>
+              <SheetContent side="left">
+                <SheetHeader>
+                  <SheetTitle>Gazai</SheetTitle>
+                  <SheetDescription>
+                    <SidebarNav items={sidebarNavItems} />
+                  </SheetDescription>
+                </SheetHeader>
+              </SheetContent>
+            </Sheet>
+
+            <div className="ml-auto flex items-center space-x-4">
+              <UserNav />
+            </div>
+          </div>
+        </div>
+        <div>{children}</div>
+      </div>
+    </SessionProvider>
+  );
 }
