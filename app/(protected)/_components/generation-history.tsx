@@ -9,19 +9,21 @@ export default function GenerationHistory({
   history: BetterUserPromptResult;
   imageAsGuide?: (image: string) => void;
 }) {
+  const { parameters, images } = history;
+
   return (
     <div className="relative">
       <ScrollArea>
         <p className="text-sm text-muted-foreground pb-2">
-          {history.parameters.prompt}
+          {parameters.prompt}
         </p>
         <div className="flex space-x-4 pb-4">
-          {history.images.map((base64, i) => (
+          {images.map((objectKey, i) => (
             <ImageResult
-              key={`generated-${i}`}
-              image={`data:image/jpeg;base64,${base64}`}
-              width={history.parameters.width}
-              height={history.parameters.height}
+              key={`generated-${objectKey}`}
+              image={`/api/image/${objectKey}`}
+              width={parameters.width}
+              height={parameters.height}
               imageAsGuide={imageAsGuide}
             />
           ))}

@@ -1,4 +1,4 @@
-import { MockImage } from './Image';
+import { MockImage, MockObjectKey } from './Image';
 
 export const MockSDResponse = ({
   prompt,
@@ -25,7 +25,7 @@ export const MockSDResponse = ({
   steps: number;
   alwaysOnScripts?: any;
 }) => ({
-  images: Array(batchSize).fill(MockImage),
+  images: Array(batchSize).fill(MockObjectKey),
   parameters: {
     prompt: prompt,
     negative_prompt: negativePrompt,

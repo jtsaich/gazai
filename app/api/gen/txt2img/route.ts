@@ -4,9 +4,12 @@ import { getRandomSeed } from '@/lib/utils';
 import { createUserPromptResultWithHistory } from '@/actions/user-prompt-result';
 import { UserPromptHistory } from '@/prisma/generated/zod';
 
+import { v4 as uuidv4 } from 'uuid';
+import { uploadObject } from '@/lib/s3';
+import { isTrue } from '@/lib/utils';
+
 // testing
 import { MockSDResponse } from '@/mocks/SDResponse';
-import { isTrue } from '@/lib/utils';
 
 const useMockResponse = isTrue(process.env.USE_MOCK_SD_RESPONSE);
 
@@ -35,6 +38,13 @@ export async function POST(request: Request) {
     });
     result = await res.json();
   }
+
+  const images = result.images.map((i: string) => {
+    const objectKey = uuidv4();
+    uploadObject(i, objectKey);
+    return objectKey;
+  });
+  result.images = images;
 
   const historyResult = await createUserPromptResultWithHistory(result, {
     type: 'txt2img',

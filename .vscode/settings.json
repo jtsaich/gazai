@@ -5,6 +5,8 @@
     "controlnet",
     "ctrlnet",
     "decamelize",
-    "denoising"
+    "denoising",
+    "gazai",
+    "uuidv"
   ]
 }

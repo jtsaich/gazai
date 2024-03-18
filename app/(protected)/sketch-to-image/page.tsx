@@ -19,7 +19,11 @@ import ModelSelect from '../_components/model-select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SketchToImageSchema, SketchToImageFormValues } from '@/schemas';
-import { BetterUserPromptResult } from '../_types';
+import {
+  BetterUserPromptResult,
+  isBetterUserPromptResult,
+  isBetterUserPromptResultArray
+} from '../_types';
 import { Separator } from '@/components/ui/separator';
 import GenerationHistory from '../_components/generation-history';
 import { isTrue } from '@/lib/utils';
@@ -56,8 +60,9 @@ export default function SketchToImage() {
     const fetchGenerationHistory = async () => {
       try {
         const response = await axios.get('/api/user-prompt-result');
-        const data: BetterUserPromptResult[] = response.data;
-        if (data) {
+        const data = response.data;
+
+        if (data && isBetterUserPromptResultArray(data)) {
           setGenerationHistory((prev) => [...prev, ...data]);
         }
       } catch (error) {
@@ -107,7 +112,10 @@ export default function SketchToImage() {
     try {
       const response = await axios.post(url, payload);
       const data: BetterUserPromptResult = response.data;
-      setGenerationHistory((prev) => [data, ...prev]);
+
+      if (data && isBetterUserPromptResult(data)) {
+        setGenerationHistory((prev) => [data, ...prev]);
+      }
     } catch (error) {
       console.error(error);
     }

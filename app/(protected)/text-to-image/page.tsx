@@ -19,7 +19,12 @@ import ModelSelect from '../_components/model-select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { TextToImageSchema } from '@/schemas';
-import { TextToImageFormValues, BetterUserPromptResult } from '../_types';
+import {
+  TextToImageFormValues,
+  BetterUserPromptResult,
+  isBetterUserPromptResult,
+  isBetterUserPromptResultArray
+} from '../_types';
 import GenerationHistory from '../_components/generation-history';
 import { Separator } from '@/components/ui/separator';
 import { isTrue } from '@/lib/utils';
@@ -53,8 +58,9 @@ export default function TextToImage() {
     const fetchGenerationHistory = async () => {
       try {
         const response = await axios.get('/api/user-prompt-result');
-        const data: BetterUserPromptResult[] = response.data;
-        if (data) {
+        const data = response.data;
+
+        if (data && isBetterUserPromptResultArray(data)) {
           setGenerationHistory((prev) => [...prev, ...data]);
         }
       } catch (error) {
@@ -90,8 +96,10 @@ export default function TextToImage() {
     console.debug('/api/gen/txt2img', payload);
     try {
       const response = await axios.post('/api/gen/txt2img', payload);
-      const data: BetterUserPromptResult = response.data;
-      setGenerationHistory((prev) => [data, ...prev]);
+      const data = response.data;
+      if (data && isBetterUserPromptResult(data)) {
+        setGenerationHistory((prev) => [data, ...prev]);
+      }
     } catch (error) {
       console.error(error);
     }
