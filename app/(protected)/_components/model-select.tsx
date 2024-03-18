@@ -1,4 +1,6 @@
 import { LoRAs } from '@/app/constants';
+import { Badge } from '@/components/ui/badge';
+import { FormControl, FormItem, FormLabel } from '@/components/ui/form';
 import { Listbox } from '@headlessui/react';
 
 export default function ModelSelect({
@@ -9,43 +11,39 @@ export default function ModelSelect({
   onChange: (val: unknown) => void;
 }) {
   return (
-    <label className="form-control w-full max-w-xs">
+    <FormItem>
       <Listbox
         defaultValue={value}
         by={(a: { id: string }, b: { id: string }) => a.id === b.id}
         onChange={onChange}
         multiple
       >
-        <div className="label">
-          <Listbox.Label className="label-text">
-            Characters / Clothes
-          </Listbox.Label>
-        </div>
-        <Listbox.Button className="input input-bordered w-full max-w-xs h-auto min-h-[3rem] text-left py-2">
-          {() => (
-            <>
-              {value.map((lora) => (
-                <span
-                  key={lora.id}
-                  className="badge badge-primary p-2 m-1 h-auto rounded-sm"
-                  onClick={() => {}}
-                >
-                  {lora.name}
-                </span>
-              ))}
-            </>
-          )}
-        </Listbox.Button>
-        <Listbox.Options className="menu" as="ul">
+        <Listbox.Label as={FormLabel}>Characters / Clothes</Listbox.Label>
+        <FormControl>
+          <Listbox.Button className="flex flex-wrap w-full h-auto min-h-[3rem] p-2 border border-input rounded-md text-left gap-1">
+            {() => (
+              <>
+                {value.map((lora) => (
+                  <Badge key={lora.id} onClick={() => {}}>
+                    {lora.name}
+                  </Badge>
+                ))}
+              </>
+            )}
+          </Listbox.Button>
+        </FormControl>
+        <Listbox.Options as="ul">
           {LoRAs.map((lora) => (
-            <li key={lora.id}>
-              <Listbox.Option value={lora} as="a">
-                {lora.name}
-              </Listbox.Option>
-            </li>
+            <Listbox.Option
+              key={lora.id}
+              value={lora}
+              className="cursor-pointer"
+            >
+              {lora.name}
+            </Listbox.Option>
           ))}
         </Listbox.Options>
       </Listbox>
-    </label>
+    </FormItem>
   );
 }

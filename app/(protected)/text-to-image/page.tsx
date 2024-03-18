@@ -144,7 +144,7 @@ export default function TextToImage() {
                       { label: '512', value: '512' }
                     ]}
                     value={String(field.value)}
-                    onChange={field.onChange}
+                    onChange={(val) => field.onChange(+val)}
                   />
                 )}
               />
@@ -153,7 +153,13 @@ export default function TextToImage() {
                 control={form.control}
                 name="cfgScale"
                 render={({ field }) => (
-                  <Range label="cfg" value={field.value} min={0} max={20} />
+                  <Range
+                    label="cfg"
+                    value={field.value}
+                    onChange={field.onChange}
+                    min={0}
+                    max={20}
+                  />
                 )}
               />
 

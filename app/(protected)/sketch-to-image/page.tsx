@@ -180,7 +180,13 @@ export default function SketchToImage() {
               control={form.control}
               name="cfgScale"
               render={({ field }) => (
-                <Range label="cfg" value={field.value} min={0} max={20} />
+                <Range
+                  label="cfg"
+                  value={field.value}
+                  onChange={field.onChange}
+                  min={0}
+                  max={20}
+                />
               )}
             />
 
@@ -191,6 +197,7 @@ export default function SketchToImage() {
                 <Range
                   label="ノイズ除去の強さ"
                   value={field.value}
+                  onChange={field.onChange}
                   min={0.1}
                   max={1.0}
                   step={0.05}

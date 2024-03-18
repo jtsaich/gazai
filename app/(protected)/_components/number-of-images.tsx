@@ -1,5 +1,6 @@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { FormControl, FormItem, FormLabel } from '@/components/ui/form';
 
 function NumberButton({ id, value }: { id: string; value: number }) {
   return (
@@ -23,22 +24,24 @@ export default function NumberOfImages({
   onChange: (val: number) => void;
 }) {
   return (
-    <div className="flex flex-col">
-      <div className="label">
-        <span className="label-text">Number of Images</span>
+    <FormItem>
+      <div className="flex flex-col">
+        <FormLabel>Number of Images</FormLabel>
+        <FormControl>
+          <RadioGroup
+            defaultValue={String(value)}
+            className="grid grid-cols-4 py-2 gap-2"
+            onValueChange={(val) => {
+              onChange(Number(val));
+            }}
+          >
+            <NumberButton id="one" value={1} />
+            <NumberButton id="two" value={2} />
+            <NumberButton id="three" value={3} />
+            <NumberButton id="four" value={4} />
+          </RadioGroup>
+        </FormControl>
       </div>
-      <RadioGroup
-        defaultValue={String(value)}
-        className="grid grid-cols-4 gap-2"
-        onValueChange={(val) => {
-          onChange(Number(val));
-        }}
-      >
-        <NumberButton id="one" value={1} />
-        <NumberButton id="two" value={2} />
-        <NumberButton id="three" value={3} />
-        <NumberButton id="four" value={4} />
-      </RadioGroup>
-    </div>
+    </FormItem>
   );
 }
