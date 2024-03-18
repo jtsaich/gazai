@@ -3,6 +3,8 @@
 import { logout } from '@/actions/logout';
 import { cn } from '@/lib/utils';
 import { useToggle } from '@uidotdev/usehooks';
+import { Button } from '../ui/button';
+import { Loader2 } from 'lucide-react';
 
 const LogoutButton = ({ children }: { children: React.ReactNode }) => {
   const [loggingOut, toggleLoggingOut] = useToggle(false);
@@ -13,21 +15,16 @@ const LogoutButton = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <button
-      onClick={handleLogout}
-      className={cn('btn btn-secondary', {
-        'btn-disabled': loggingOut
-      })}
-      disabled={loggingOut}
-    >
+    <Button onClick={handleLogout} variant={'secondary'} disabled={loggingOut}>
       {loggingOut ? (
         <>
-          <span className="loading loading-spinner"></span> loading
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Please wait
         </>
       ) : (
         children
       )}
-    </button>
+    </Button>
   );
 };
 

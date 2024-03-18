@@ -10,7 +10,9 @@ import { ResetSchema } from '@/schemas';
 import FormError from '@/components/form-error';
 import FormSuccess from '@/components/form-success';
 import { reset } from '@/actions/reset';
-import Input from '../form/input';
+import FormItemInput from '../form/form-item-input';
+import { Button } from '../ui/button';
+import { Loader2 } from 'lucide-react';
 
 const ResetPasswordForm = () => {
   const [error, setError] = useState<string | undefined>('');
@@ -48,7 +50,7 @@ const ResetPasswordForm = () => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col gap-y-6"
         >
-          <Input
+          <FormItemInput
             label="Email"
             disabled={isPending}
             placeholder="your.email@example.com"
@@ -57,20 +59,16 @@ const ResetPasswordForm = () => {
           />
           {error && <FormError message={error} />}
           {success && <FormSuccess message={success} />}
-          <button
-            disabled={isPending}
-            type="submit"
-            className="btn btn-primary w-full"
-          >
+          <Button disabled={isPending} type="submit" className="w-full">
             {isPending ? (
               <>
-                <span className="loading loading-spinner"></span>
-                loading
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Please wait
               </>
             ) : (
               'Send reset password email'
             )}
-          </button>
+          </Button>
         </form>
       </div>
     </div>

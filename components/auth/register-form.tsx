@@ -11,8 +11,10 @@ import { RegisterSchema } from '@/schemas';
 import FormError from '../form-error';
 import FormSuccess from '../form-success';
 import { register } from '@/actions/register';
-import Input from '@/components/form/input';
+import FormItemInput from '@/components/form/form-item-input';
 import Link from 'next/link';
+import { Button } from '../ui/button';
+import { Loader2 } from 'lucide-react';
 
 const RegisterForm = () => {
   const isClient = useIsClient();
@@ -63,13 +65,13 @@ const RegisterForm = () => {
           className="flex flex-col gap-y-6"
         >
           <div className="flex flex-col gap-y-4">
-            <Input
+            <FormItemInput
               label="Name"
               disabled={isPending}
               placeholder="Your Name"
               {...form.register('name')}
             />
-            <Input
+            <FormItemInput
               label="Email"
               disabled={isPending}
               type="email"
@@ -77,7 +79,7 @@ const RegisterForm = () => {
               autoComplete="email"
               {...form.register('email')}
             />
-            <Input
+            <FormItemInput
               label="Password"
               disabled={isPending}
               type="password"
@@ -85,7 +87,7 @@ const RegisterForm = () => {
               autoComplete="new-password"
               {...form.register('password')}
             />
-            <Input
+            <FormItemInput
               label="Confirm your password"
               disabled={isPending}
               type="password"
@@ -96,20 +98,16 @@ const RegisterForm = () => {
           </div>
           {error && <FormError message={error} />}
           {success && <FormSuccess message={success} />}
-          <button
-            type="submit"
-            disabled={isPending}
-            className="btn btn-primary w-full"
-          >
+          <Button type="submit" disabled={isPending} className="w-full">
             {isPending ? (
               <>
-                <span className="loading loading-spinner"></span>
-                loading
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Please wait
               </>
             ) : (
               'Register'
             )}
-          </button>
+          </Button>
 
           <div className="text-center">
             Already have an account?{' '}

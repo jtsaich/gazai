@@ -1,9 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Controller, useForm } from 'react-hook-form';
-import clsx from 'clsx';
+import axios, { isAxiosError } from 'axios';
+import { useForm } from 'react-hook-form';
 
 import { LoRAs } from '@/app/constants';
 import {
@@ -12,8 +11,7 @@ import {
   ResizableHandle
 } from '@/components/ui/resizable';
 import Range from '@/components/form/range';
-import Select from '@/components/form/select';
-import Input from '@/components/form/input';
+import FormItemSelect from '@/components/form/form-item-select';
 import NumberOfImages from '../_components/number-of-images';
 import ModelSelect from '../_components/model-select';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -28,6 +26,11 @@ import {
 import GenerationHistory from '../_components/generation-history';
 import { Separator } from '@/components/ui/separator';
 import { isTrue } from '@/lib/utils';
+import { toast } from 'sonner';
+import { Form, FormField } from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
+import FormItemTextarea from '@/components/form/form-item-textarea';
 
 const enableTranslation = isTrue(process.env.NEXT_PUBLIC_ENABLE_TRANSLATION);
 
@@ -35,12 +38,7 @@ export default function TextToImage() {
   const [generationHistory, setGenerationHistory] = useState<
     BetterUserPromptResult[]
   >([]);
-  const {
-    control,
-    handleSubmit,
-    register,
-    formState: { errors, isSubmitting }
-  } = useForm<TextToImageFormValues>({
+  const form = useForm<TextToImageFormValues>({
     defaultValues: {
       batchSize: 1,
       prompt: 'A female elf with golden crown',
@@ -102,108 +100,125 @@ export default function TextToImage() {
       }
     } catch (error) {
       console.error(error);
+      if (isAxiosError(error)) {
+        toast.error(error.message);
+      }
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <ResizablePanelGroup direction="horizontal" className="w-full h-screen">
-        <ResizablePanel defaultSize={20} className="h-screen">
-          <div className="flex flex-col h-full w-full p-10">
-            <Controller
-              render={({ field }) => (
-                <>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <ResizablePanelGroup direction="horizontal" className="w-full h-screen">
+          <ResizablePanel defaultSize={20} className="h-screen">
+            <div className="flex flex-col h-full w-full min-w-[300px] p-10">
+              <FormField
+                control={form.control}
+                name="batchSize"
+                render={({ field }) => (
                   <NumberOfImages
                     value={Number(field.value)}
                     onChange={field.onChange}
                   />
-                </>
-              )}
-              control={control}
-              name="batchSize"
-            />
+                )}
+              />
 
-            <Controller
-              render={({ field }) => (
-                <ModelSelect value={field.value} onChange={field.onChange} />
-              )}
-              control={control}
-              name="loraSelections"
-            />
+              <FormField
+                control={form.control}
+                name="loraSelections"
+                render={({ field }) => (
+                  <ModelSelect value={field.value} onChange={field.onChange} />
+                )}
+              />
 
-            <Select
-              label="Output image size"
-              options={[
-                { label: '1024', value: '1024' },
-                { label: '768', value: '768' },
-                { label: '512', value: '512' }
-              ]}
-              {...register('width', { valueAsNumber: true })}
-            />
-
-            <Range
-              label="cfg"
-              min={0}
-              max={20}
-              className="range range-xs"
-              {...register('cfgScale')}
-            />
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className={clsx('btn btn-primary w-full mt-4', {
-                'btn-disabled': isSubmitting
-              })}
-            >
-              {isSubmitting ? (
-                <>
-                  <span className="loading loading-spinner"></span>
-                  loading
-                </>
-              ) : (
-                'Generate'
-              )}
-            </button>
-          </div>
-        </ResizablePanel>
-        <ResizableHandle />
-        <ResizablePanel defaultSize={80} className="h-screen">
-          <main className="flex flex-col h-full w-full">
-            <ScrollArea>
-              <div className="p-10">
-                <div className="flex flex-col gap-4 pb-4">
-                  <Input label="Prompt" {...register('prompt')} />
-                  <button className="btn btn-primary max-w-xs">
-                    Generate random prompt
-                  </button>
-                  <Input
-                    label="Negative prompt"
-                    {...register('negativePrompt')}
+              <FormField
+                control={form.control}
+                name="width"
+                render={({ field }) => (
+                  <FormItemSelect
+                    label="Output image size"
+                    options={[
+                      { label: '1024', value: '1024' },
+                      { label: '768', value: '768' },
+                      { label: '512', value: '512' }
+                    ]}
+                    value={String(field.value)}
+                    onChange={field.onChange}
                   />
-                </div>
+                )}
+              />
 
-                <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <h2 className="text-2xl font-semibold tracking-tight">
-                      Generation history
-                    </h2>
+              <FormField
+                control={form.control}
+                name="cfgScale"
+                render={({ field }) => (
+                  <Range label="cfg" value={field.value} min={0} max={20} />
+                )}
+              />
+
+              <Button
+                type="submit"
+                disabled={form.formState.isSubmitting}
+                className={'mt-4'}
+              >
+                {form.formState.isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Please wait
+                  </>
+                ) : (
+                  'Generate'
+                )}
+              </Button>
+            </div>
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel defaultSize={80} className="h-screen">
+            <main className="flex flex-col h-full w-full">
+              <ScrollArea>
+                <div className="p-10">
+                  <div className="flex flex-col gap-4 pb-4">
+                    <FormField
+                      control={form.control}
+                      name="prompt"
+                      render={({ field }) => (
+                        <FormItemTextarea label="Prompt" {...field} />
+                      )}
+                    />
+
+                    <Button>Generate random prompt</Button>
+
+                    <FormField
+                      control={form.control}
+                      name="negativePrompt"
+                      render={({ field }) => (
+                        <FormItemTextarea label="Negative prompt" {...field} />
+                      )}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <h2 className="text-2xl font-semibold tracking-tight">
+                        Generation history
+                      </h2>
+                    </div>
+                  </div>
+                  <Separator className="my-4" />
+                  <div className="flex flex-col gap-y-4">
+                    {generationHistory.map((history, i) => (
+                      <div key={i}>
+                        <GenerationHistory history={history} />
+                        <Separator className="my-4" />
+                      </div>
+                    ))}
                   </div>
                 </div>
-                <Separator className="my-4" />
-                <div className="flex flex-col gap-y-4">
-                  {generationHistory.map((history, i) => (
-                    <div key={i}>
-                      <GenerationHistory history={history} />
-                      <Separator className="my-4" />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </ScrollArea>
-          </main>
-        </ResizablePanel>
-      </ResizablePanelGroup>
-    </form>
+              </ScrollArea>
+            </main>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </form>
+    </Form>
   );
 }

@@ -6,6 +6,7 @@ import { ArrowLeftOnRectangleIcon } from '@heroicons/react/20/solid';
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 export default function IndexPage() {
   const [images, setImages] = useState<any>([]);
@@ -33,12 +34,12 @@ export default function IndexPage() {
       <h1 className="text-4xl font-bold mb-4">Start making art!</h1>
 
       <div className="flex overflow-hidden rounded-md gap-4">
-        <Link className="btn btn-primary" href="/text-to-image">
-          Image Generation
-        </Link>
-        <Link className="btn btn-primary" href="/sketch-to-image">
-          Magic Paint
-        </Link>
+        <Button asChild>
+          <Link href="/text-to-image">Image Generation</Link>
+        </Button>
+        <Button asChild>
+          <Link href="/sketch-to-image">Magic Paint</Link>
+        </Button>
         <LogoutButton>
           <ArrowLeftOnRectangleIcon className="h-4 w-4 mr-2" />
           Logout

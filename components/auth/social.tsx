@@ -5,6 +5,7 @@ import { signIn } from 'next-auth/react';
 import { GrGoogle } from 'react-icons/gr';
 
 import { DEFAULT_LOGIN_REDIRECT } from '@/routes';
+import { Button } from '../ui/button';
 
 const Social = () => {
   const searchParams = useSearchParams();
@@ -16,9 +17,9 @@ const Social = () => {
 
   return (
     <div className="flex items-center w-full gap-x-2">
-      <button className="btn w-full" onClick={() => onClick('google')}>
+      <Button className="w-full" onClick={() => onClick('google')}>
         <GrGoogle />
-      </button>
+      </Button>
     </div>
   );
 };

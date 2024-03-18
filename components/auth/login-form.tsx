@@ -13,9 +13,11 @@ import { LoginSchema } from '@/schemas';
 import FormError from '../form-error';
 import FormSuccess from '../form-success';
 import { login } from '@/actions/login';
-import Input from '../form/input';
+import FormItemInput from '../form/form-item-input';
 import Spinner from '../spinner';
 import Social from './social';
+import { Button } from '../ui/button';
+import { Loader2 } from 'lucide-react';
 
 const LoginForm = () => {
   const searchParams = useSearchParams();
@@ -85,7 +87,7 @@ const LoginForm = () => {
       >
         <div className="flex flex-col gap-y-4">
           {showTwoFactor && (
-            <Input
+            <FormItemInput
               label="Two Factor Authentication Code"
               disabled={isPending}
               placeholder="123456"
@@ -95,7 +97,7 @@ const LoginForm = () => {
           )}
           {!showTwoFactor && (
             <>
-              <Input
+              <FormItemInput
                 label="Email"
                 disabled={isPending}
                 type="email"
@@ -103,7 +105,7 @@ const LoginForm = () => {
                 autoComplete="email"
                 {...form.register('email')}
               />
-              <Input
+              <FormItemInput
                 label="Password"
                 disabled={isPending}
                 type="password"
@@ -119,22 +121,18 @@ const LoginForm = () => {
         </div>
         {error && <FormError message={error || urlError} />}
         {success && <FormSuccess message={success} />}
-        <button
-          type="submit"
-          disabled={isPending}
-          className="btn btn-primary w-full"
-        >
+        <Button type="submit" disabled={isPending} className="w-full">
           {isPending ? (
             <>
-              <span className="loading loading-spinner"></span>
-              loading
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Please wait
             </>
           ) : showTwoFactor ? (
             'Confirm'
           ) : (
             'Login'
           )}
-        </button>
+        </Button>
       </form>
       <div className="relative">
         <div className="absolute inset-0 flex items-center">

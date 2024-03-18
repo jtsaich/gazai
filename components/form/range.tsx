@@ -1,33 +1,18 @@
 import React, { ForwardedRef, InputHTMLAttributes } from 'react';
+import { Slider } from '../ui/slider';
+import { FormControl, FormItem, FormLabel } from '../ui/form';
 
 interface RangeProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
 }
 
-const Range = React.forwardRef(
-  (
-    { label, name, min, max, step, ...rest }: RangeProps,
-    ref: ForwardedRef<HTMLInputElement>
-  ) => (
-    <label className="form-control w-full max-w-xs">
-      {label && (
-        <div className="label">
-          <span className="label-text">{label}</span>
-        </div>
-      )}
-      <input
-        ref={ref}
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        className="range"
-        {...rest}
-      />
-    </label>
-  )
+const Range = ({ label, value, min, max, step }: RangeProps) => (
+  <FormItem>
+    {label && <FormLabel>{label}</FormLabel>}
+    <FormControl>
+      <Slider defaultValue={[value]} min={min} max={max} step={step} />
+    </FormControl>
+  </FormItem>
 );
-
-Range.displayName = 'Range';
 
 export default Range;

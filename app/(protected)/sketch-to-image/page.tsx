@@ -5,8 +5,8 @@ import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { LoRAs } from '@/app/constants';
-import Select from '@/components/form/select';
-import Input from '@/components/form/input';
+import Select from '@/components/form/form-item-select';
+import FormItemInput from '@/components/form/form-item-input';
 import Range from '@/components/form/range';
 import DrawingCanvas from '@/components/drawingCanvas';
 import {
@@ -27,6 +27,11 @@ import {
 import { Separator } from '@/components/ui/separator';
 import GenerationHistory from '../_components/generation-history';
 import { isTrue } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
+import { FormField } from '@/components/ui/form';
+import FormItemSelect from '@/components/form/form-item-select';
+import FormItemTextarea from '@/components/form/form-item-textarea';
 
 const enableTranslation = isTrue(process.env.NEXT_PUBLIC_ENABLE_TRANSLATION);
 
@@ -34,13 +39,7 @@ export default function SketchToImage() {
   const [generationHistory, setGenerationHistory] = useState<
     BetterUserPromptResult[]
   >([]);
-  const {
-    control,
-    handleSubmit,
-    register,
-    setValue,
-    formState: { errors, isSubmitting }
-  } = useForm<SketchToImageFormValues>({
+  const form = useForm<SketchToImageFormValues>({
     defaultValues: {
       batchSize: 1,
       prompt: 'A female elf with golden crown',
@@ -122,80 +121,99 @@ export default function SketchToImage() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={form.handleSubmit(onSubmit)}>
       <ResizablePanelGroup direction="horizontal" className="w-full h-screen">
         <ResizablePanel defaultSize={20} className="h-screen">
-          <div className="flex flex-col h-full w-full p-10">
-            <Select
-              label="推論モード"
-              options={[
-                { label: 'i2i', value: 'i2i' },
-                { label: 't2i-scribble', value: 't2i-scribble' },
-                { label: 'coloring', value: 'coloring' }
-              ]}
-              {...register('inference')}
+          <div className="flex flex-col h-full w-full min-w-[300px] p-10">
+            <FormField
+              control={form.control}
+              name="inference"
+              render={({ field }) => (
+                <FormItemSelect
+                  label="推論モード"
+                  options={[
+                    { label: 'i2i', value: 'i2i' },
+                    { label: 't2i-scribble', value: 't2i-scribble' },
+                    { label: 'coloring', value: 'coloring' }
+                  ]}
+                  value={String(field.value)}
+                  onChange={field.onChange}
+                />
+              )}
             />
-            <Controller
+
+            <FormField
+              control={form.control}
+              name="batchSize"
               render={({ field }) => (
                 <NumberOfImages
                   value={Number(field.value)}
                   onChange={field.onChange}
                 />
               )}
-              control={control}
-              name="batchSize"
             />
 
-            <Controller
+            <FormField
+              control={form.control}
+              name="loraSelections"
               render={({ field }) => (
                 <ModelSelect value={field.value} onChange={field.onChange} />
               )}
-              control={control}
-              name="loraSelections"
             />
 
-            <Select
-              label="Output image size"
-              options={[
-                { label: '1024', value: '1024' },
-                { label: '768', value: '768' },
-                { label: '512', value: '512' }
-              ]}
-              {...register('width', { valueAsNumber: true })}
+            <FormField
+              control={form.control}
+              name="width"
+              render={({ field }) => (
+                <FormItemSelect
+                  label="Output image size"
+                  options={[
+                    { label: '1024', value: '1024' },
+                    { label: '768', value: '768' },
+                    { label: '512', value: '512' }
+                  ]}
+                  value={String(field.value)}
+                  onChange={field.onChange}
+                />
+              )}
             />
 
-            <Range
-              label="cfg"
-              min={0}
-              max={20}
-              className="range range-xs"
-              {...register('cfgScale')}
-            />
-            <Range
-              label="ノイズ除去の強さ"
-              min={0.1}
-              max={1.0}
-              step={0.05}
-              className="range range-xs"
-              {...register('denoisingStrength')}
+            <FormField
+              control={form.control}
+              name="cfgScale"
+              render={({ field }) => (
+                <Range label="cfg" value={field.value} min={0} max={20} />
+              )}
             />
 
-            <button
+            <FormField
+              control={form.control}
+              name="denoisingStrength"
+              render={({ field }) => (
+                <Range
+                  label="ノイズ除去の強さ"
+                  value={field.value}
+                  min={0.1}
+                  max={1.0}
+                  step={0.05}
+                />
+              )}
+            />
+
+            <Button
               type="submit"
-              disabled={isSubmitting}
-              className={clsx('btn btn-primary w-full mt-4', {
-                'btn-disabled': isSubmitting
-              })}
+              disabled={form.formState.isSubmitting}
+              className={'mt-4'}
             >
-              {isSubmitting ? (
+              {form.formState.isSubmitting ? (
                 <>
-                  <span className="loading loading-spinner"></span>
-                  loading
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Please wait
                 </>
               ) : (
                 'Generate'
               )}
-            </button>
+            </Button>
           </div>
         </ResizablePanel>
         <ResizableHandle />
@@ -204,26 +222,35 @@ export default function SketchToImage() {
             <ScrollArea>
               <div className="p-10">
                 <div className="flex flex-col gap-4 pb-4">
-                  <Input label="Prompt" {...register('prompt')} />
-                  <button type="button" className="btn btn-primary max-w-xs">
-                    Generate random prompt
-                  </button>
-                  <Input
-                    label="Negative prompt"
-                    {...register('negativePrompt')}
+                  <FormField
+                    control={form.control}
+                    name="prompt"
+                    render={({ field }) => (
+                      <FormItemTextarea label="Prompt" {...field} />
+                    )}
+                  />
+
+                  <Button>Generate random prompt</Button>
+
+                  <FormField
+                    control={form.control}
+                    name="negativePrompt"
+                    render={({ field }) => (
+                      <FormItemTextarea label="Negative prompt" {...field} />
+                    )}
                   />
                 </div>
 
                 <div className="grid grid-cols-2 pb-4">
-                  <Controller
+                  <FormField
+                    control={form.control}
+                    name="inputImage"
                     render={({ field }) => (
                       <DrawingCanvas
                         setCanvasOutput={(dataUrl) => field.onChange(dataUrl)}
                         guidedImage={field.value}
                       />
                     )}
-                    control={control}
-                    name="inputImage"
                   />
                 </div>
 
@@ -241,7 +268,7 @@ export default function SketchToImage() {
                       <GenerationHistory
                         history={history}
                         imageAsGuide={(image) => {
-                          setValue('inputImage', image);
+                          form.setValue('inputImage', image);
                         }}
                       />
                       <Separator className="my-4" />

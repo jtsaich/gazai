@@ -1,17 +1,17 @@
 'use client';
 
 import { setAsAdmin } from '@/actions/admin';
+import { Button } from './ui/button';
 
 function SetAsAdminButton({ userId }: { userId: string }) {
   return (
-    <button
-      className="btn btn-primary"
+    <Button
       onClick={async () => {
         setAsAdmin(userId);
       }}
     >
       Set as Admin
-    </button>
+    </Button>
   );
 }
 

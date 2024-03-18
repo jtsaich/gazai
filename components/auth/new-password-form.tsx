@@ -12,7 +12,8 @@ import { newPassword } from '@/actions/new-password';
 import { Button } from '@/components/ui/button';
 import FormError from '@/components/form-error';
 import FormSuccess from '@/components/form-success';
-import Input from '../form/input';
+import FormItemInput from '../form/form-item-input';
+import { Loader2 } from 'lucide-react';
 
 const NewPasswordForm = () => {
   const searchParams = useSearchParams();
@@ -56,7 +57,7 @@ const NewPasswordForm = () => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex flex-col gap-y-6"
           >
-            <Input
+            <FormItemInput
               label="Password"
               disabled={isPending}
               type="password"
@@ -64,7 +65,7 @@ const NewPasswordForm = () => {
               autoComplete="new-password"
               {...form.register('password')}
             />
-            <Input
+            <FormItemInput
               label="Confirm your password"
               disabled={isPending}
               type="password"
@@ -74,15 +75,11 @@ const NewPasswordForm = () => {
             />
             {error && <FormError message={error} />}
             {success && <FormSuccess message={success} />}
-            <Button
-              type="submit"
-              disabled={isPending}
-              className="btn btn-primary w-full"
-            >
+            <Button type="submit" disabled={isPending} className="w-full">
               {isPending ? (
                 <>
-                  <span className="loading loading-spinner"></span>
-                  loading
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Please wait
                 </>
               ) : (
                 'Reset password'

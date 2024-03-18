@@ -1,3 +1,4 @@
+import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
 
 export const metadata = {
@@ -12,7 +13,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" data-theme="light">
-      <body className="h-full">{children}</body>
+      <body className="h-full">
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }
