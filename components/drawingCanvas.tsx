@@ -2,11 +2,11 @@
 
 import { useEffect, useRef } from 'react';
 import p5 from 'p5';
+import { Trash2 } from 'lucide-react';
 
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Trash, Trash2 } from 'lucide-react';
-import { FormField, FormItem, FormLabel } from './ui/form';
+import { FormItem, FormLabel } from './ui/form';
 
 interface Point {
   x: number;

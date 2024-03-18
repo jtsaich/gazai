@@ -5,8 +5,6 @@ import { getRandomSeed, isTrue } from '@/lib/utils';
 import { createUserPromptResultWithHistory } from '@/actions/user-prompt-result';
 import { UserPromptHistory } from '@/prisma/generated/zod';
 import { uploadObject } from '@/lib/s3';
-
-// testing
 import { MockSDResponse } from '@/mocks/SDResponse';
 
 const useMockResponse = isTrue(process.env.USE_MOCK_SD_RESPONSE);
