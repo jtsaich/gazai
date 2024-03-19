@@ -16,6 +16,10 @@ import { UserNav } from './_components/user-nav';
 
 const sidebarNavItems = [
   {
+    title: 'Explore',
+    href: '/'
+  },
+  {
     title: 'Text to image',
     href: '/text-to-image'
   },
