@@ -1,27 +1,63 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Stage, Layer, Line } from 'react-konva';
+import { Stage, Layer, Line, Image } from 'react-konva';
 import Konva from 'konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { Eraser, Pen, Redo, Trash2, Undo } from 'lucide-react';
+import useImage from 'use-image';
+
+import { useStore } from '@/app/store/input-image';
 
 import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group';
 import { Button } from './ui/button';
 
-interface CanvasState {
-  tool: string;
+enum Tool {
+  Pen = 'pen',
+  Eraser = 'eraser',
+  Image = 'image'
+}
+
+interface CanvasLine {
+  tool: Tool.Pen | Tool.Eraser;
   points: number[];
 }
 
-function DrawingCanvas({ onChange }: { onChange: (dataUrl: string) => void }) {
+interface CanvasImage {
+  tool: Tool.Image;
+  image: string;
+}
+
+type CanvasState = CanvasLine | CanvasImage;
+
+function isCanvasLine(obj: CanvasState): obj is CanvasLine {
+  return obj.tool === Tool.Pen || obj.tool === Tool.Eraser;
+}
+
+const URLImage = ({
+  image,
+  width,
+  height
+}: {
+  image: string;
+  width: number;
+  height: number;
+}) => {
+  const [img] = useImage(image);
+  return <Image image={img} width={width} height={height} />;
+};
+
+function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
+  const inputImage = useStore((state) => state.inputImage);
+  const loadInputImage = useStore((state) => state.loadInputImage);
+  const toggleLoadInputImage = useStore((state) => state.toggleLoadInputImage);
+
   const containerDivRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<Konva.Node>(null);
-
-  const [tool, setTool] = useState('pen');
-  const isDrawing = useRef(false);
-
   const [stageSize, setStageSize] = useState({ width: 1, height: 1 });
+
+  const [tool, setTool] = useState(Tool.Pen);
+  const isDrawing = useRef(false);
 
   const [history, setHistory] = useState<CanvasState[][]>([[]]);
   const [historyStep, setHistoryStep] = useState(0);
@@ -29,6 +65,7 @@ function DrawingCanvas({ onChange }: { onChange: (dataUrl: string) => void }) {
     history[historyStep]
   );
 
+  // handle window resize
   useEffect(() => {
     if (!containerDivRef.current) return;
     setStageSize({
@@ -50,15 +87,32 @@ function DrawingCanvas({ onChange }: { onChange: (dataUrl: string) => void }) {
     };
   }, [containerDivRef]);
 
+  // handle output to input
   useEffect(() => {
+    if (!inputImage) return;
+    if (!loadInputImage) return;
+
+    setHistory((prev) => [
+      ...prev.slice(0, historyStep + 1),
+      [{ tool: Tool.Image, image: inputImage }]
+    ]);
+    setHistoryStep((prev) => prev + 1);
+    toggleLoadInputImage();
+  }, [inputImage, loadInputImage]);
+
+  // get current state via history
+  useEffect(() => {
+    if (!history[historyStep]) return;
+
     setCurrentState(history[historyStep]);
   }, [history, historyStep]);
 
+  // return data url result on current state change
   useEffect(() => {
     if (!stageRef.current) return;
 
     const uri = stageRef.current?.toDataURL();
-    onChange(uri);
+    onChange?.(uri);
   }, [stageRef, onChange, currentState]);
 
   const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
@@ -66,7 +120,10 @@ function DrawingCanvas({ onChange }: { onChange: (dataUrl: string) => void }) {
     const pos = e.target.getStage()?.getPointerPosition();
     if (!pos) return;
 
-    setCurrentState([...currentState, { tool, points: [pos.x, pos.y] }]);
+    setCurrentState([
+      ...currentState,
+      { tool, points: [pos.x, pos.y] } as CanvasLine
+    ]);
   };
 
   const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
@@ -80,7 +137,9 @@ function DrawingCanvas({ onChange }: { onChange: (dataUrl: string) => void }) {
 
     const lastLine = currentState[currentState.length - 1];
     // add point
-    lastLine.points = lastLine.points.concat([point.x, point.y]);
+    if (isCanvasLine(lastLine)) {
+      lastLine.points = lastLine.points.concat([point.x, point.y]);
+    }
 
     // replace last
     currentState.splice(currentState.length - 1, 1, lastLine);
@@ -126,20 +185,37 @@ function DrawingCanvas({ onChange }: { onChange: (dataUrl: string) => void }) {
         onMouseup={handleMouseUp}
       >
         <Layer>
-          {currentState.map((line, i) => (
-            <Line
-              key={i}
-              points={line.points}
-              stroke="#df4b26"
-              strokeWidth={5}
-              tension={0.5}
-              lineCap="round"
-              lineJoin="round"
-              globalCompositeOperation={
-                line.tool === 'eraser' ? 'destination-out' : 'source-over'
-              }
-            />
-          ))}
+          {currentState.map((node, i) => {
+            switch (node.tool) {
+              case 'pen':
+              case 'eraser':
+                return (
+                  <Line
+                    key={i}
+                    points={node.points}
+                    stroke="#df4b26"
+                    strokeWidth={5}
+                    tension={0.5}
+                    lineCap="round"
+                    lineJoin="round"
+                    globalCompositeOperation={
+                      node.tool === 'eraser' ? 'destination-out' : 'source-over'
+                    }
+                  />
+                );
+              case 'image':
+                return (
+                  <URLImage
+                    key={i}
+                    image={node.image}
+                    width={stageSize.width}
+                    height={stageSize.height}
+                  />
+                );
+              default:
+                return;
+            }
+          })}
         </Layer>
       </Stage>
 
@@ -151,13 +227,14 @@ function DrawingCanvas({ onChange }: { onChange: (dataUrl: string) => void }) {
           className="flex-col"
           value={tool}
           onValueChange={(value) => {
-            setTool(value);
+            if (!value) return;
+            setTool(value as Tool);
           }}
         >
-          <ToggleGroupItem value="pen" aria-label="Toggle pen">
+          <ToggleGroupItem value={Tool.Pen} aria-label="Toggle pen">
             <Pen className="h-4 w-4" />
           </ToggleGroupItem>
-          <ToggleGroupItem value="eraser" aria-label="Toggle eraser">
+          <ToggleGroupItem value={Tool.Eraser} aria-label="Toggle eraser">
             <Eraser className="h-4 w-4" />
           </ToggleGroupItem>
           <Button variant="outline" size="icon" onClick={handleUndo}>

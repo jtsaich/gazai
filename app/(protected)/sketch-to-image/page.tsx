@@ -3,9 +3,11 @@
 import axios from 'axios';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { ArrowLeftRight } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { LoRAs } from '@/app/constants';
+import { useStore } from '@/app/store/input-image';
 import Range from '@/components/form/range';
 import DrawingCanvas from '@/components/drawing-canvas';
 import { SketchToImageSchema, SketchToImageFormValues } from '@/schemas';
@@ -13,6 +15,8 @@ import { isTrue } from '@/lib/utils';
 import { Form, FormField } from '@/components/ui/form';
 import FormItemSelect from '@/components/form/form-item-select';
 import FormItemTextarea from '@/components/form/form-item-textarea';
+import { Button } from '@/components/ui/button';
+import { MockImage } from '@/mocks/Image';
 
 import { BetterUserPromptResult } from '../_types';
 import ModelSelect from '../_components/model-select';
@@ -20,7 +24,11 @@ import ModelSelect from '../_components/model-select';
 const enableTranslation = isTrue(process.env.NEXT_PUBLIC_ENABLE_TRANSLATION);
 
 export default function SketchToImage() {
-  const [image, setImage] = useState<string>();
+  const updateInputImage = useStore((state) => state.updateInputImage);
+  const toggleLoadInputImage = useStore((state) => state.toggleLoadInputImage);
+  const [image, setImage] = useState<string>(
+    `data:image/png;base64,${MockImage}`
+  );
   const form = useForm<SketchToImageFormValues>({
     defaultValues: {
       batchSize: 1,
@@ -87,20 +95,33 @@ export default function SketchToImage() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="h-full">
         <main className="flex flex-col h-full w-full p-10">
-          <div className="grid grid-cols-2 pb-4">
+          <div className="grid grid-cols-2 text-center pb-4">
+            <div></div>
+            <div>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  updateInputImage(image);
+                  toggleLoadInputImage();
+                }}
+              >
+                <ArrowLeftRight className="mr-2 h-4 w-4" />
+                Output to input
+              </Button>
+            </div>
             <FormField
               control={form.control}
               name="inputImage"
               render={() => (
                 <DrawingCanvas
                   onChange={(dataUrl) => {
-                    setImage(dataUrl);
+                    // setImage(dataUrl);
                   }}
                 />
               )}
             />
             <div className="w-full h-full">
-              <img src={image} />
+              <img src={image} className="w-full h-full" />
             </div>
           </div>
 
