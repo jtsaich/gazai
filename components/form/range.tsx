@@ -8,10 +8,19 @@ interface RangeProps {
   min?: number;
   max?: number;
   step?: number;
+  className?: string;
 }
 
-const Range = ({ label, value, onChange, min, max, step }: RangeProps) => (
-  <FormItem>
+const Range = ({
+  label,
+  value,
+  onChange,
+  min,
+  max,
+  step,
+  className
+}: RangeProps) => (
+  <FormItem className={className}>
     {label && <FormLabel>{label}</FormLabel>}
     <FormControl>
       <Slider

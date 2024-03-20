@@ -1,43 +1,26 @@
 'use client';
 
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
 
 import { LoRAs } from '@/app/constants';
 import Range from '@/components/form/range';
-import DrawingCanvas from '@/components/drawingCanvas';
-import {
-  ResizablePanelGroup,
-  ResizablePanel,
-  ResizableHandle
-} from '@/components/ui/resizable';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import DrawingCanvas from '@/components/drawing-canvas';
 import { SketchToImageSchema, SketchToImageFormValues } from '@/schemas';
-import { Separator } from '@/components/ui/separator';
 import { isTrue } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { Form, FormField } from '@/components/ui/form';
 import FormItemSelect from '@/components/form/form-item-select';
 import FormItemTextarea from '@/components/form/form-item-textarea';
 
-import GenerationHistory from '../_components/generation-history';
-import {
-  BetterUserPromptResult,
-  isBetterUserPromptResult,
-  isBetterUserPromptResultArray
-} from '../_types';
+import { BetterUserPromptResult } from '../_types';
 import ModelSelect from '../_components/model-select';
-import NumberOfImages from '../_components/number-of-images';
 
 const enableTranslation = isTrue(process.env.NEXT_PUBLIC_ENABLE_TRANSLATION);
 
 export default function SketchToImage() {
-  const [generationHistory, setGenerationHistory] = useState<
-    BetterUserPromptResult[]
-  >([]);
+  const [image, setImage] = useState<string>();
   const form = useForm<SketchToImageFormValues>({
     defaultValues: {
       batchSize: 1,
@@ -53,23 +36,6 @@ export default function SketchToImage() {
     },
     resolver: zodResolver(SketchToImageSchema)
   });
-
-  useEffect(() => {
-    const fetchGenerationHistory = async () => {
-      try {
-        const response = await axios.get('/api/user-prompt-result');
-        const data = response.data;
-
-        if (data && isBetterUserPromptResultArray(data)) {
-          setGenerationHistory(data);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchGenerationHistory();
-  }, []);
 
   const onSubmit = async (data: SketchToImageFormValues) => {
     let prompt = data.prompt;
@@ -111,10 +77,7 @@ export default function SketchToImage() {
     try {
       const response = await axios.post(url, payload);
       const data: BetterUserPromptResult = response.data;
-
-      if (data && isBetterUserPromptResult(data)) {
-        setGenerationHistory((prev) => [data, ...prev]);
-      }
+      console.debug(data);
     } catch (error) {
       console.error(error);
     }
@@ -123,176 +86,102 @@ export default function SketchToImage() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="h-full">
-        <ResizablePanelGroup direction="horizontal" className="w-full">
-          <ResizablePanel defaultSize={20}>
-            <div className="w-full min-w-[300px] h-full flex flex-col justify-between">
-              <div className="flex flex-col p-10 gap-4">
-                <FormField
-                  control={form.control}
-                  name="inference"
-                  render={({ field }) => (
-                    <FormItemSelect
-                      label="推論モード"
-                      options={[
-                        { label: 'i2i', value: 'i2i' },
-                        { label: 't2i-scribble', value: 't2i-scribble' },
-                        { label: 'coloring', value: 'coloring' }
-                      ]}
-                      value={String(field.value)}
-                      onChange={field.onChange}
-                    />
-                  )}
+        <main className="flex flex-col h-full w-full p-10">
+          <div className="grid grid-cols-2 pb-4">
+            <FormField
+              control={form.control}
+              name="inputImage"
+              render={() => (
+                <DrawingCanvas
+                  onChange={(dataUrl) => {
+                    setImage(dataUrl);
+                  }}
                 />
-
-                <FormField
-                  control={form.control}
-                  name="batchSize"
-                  render={({ field }) => (
-                    <NumberOfImages
-                      value={Number(field.value)}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="loraSelections"
-                  render={({ field }) => (
-                    <ModelSelect
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="width"
-                  render={({ field }) => (
-                    <FormItemSelect
-                      label="Output image size"
-                      options={[
-                        { label: '1024', value: '1024' },
-                        { label: '768', value: '768' },
-                        { label: '512', value: '512' }
-                      ]}
-                      value={String(field.value)}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="cfgScale"
-                  render={({ field }) => (
-                    <Range
-                      label="cfg"
-                      value={field.value}
-                      onChange={field.onChange}
-                      min={0}
-                      max={20}
-                    />
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="denoisingStrength"
-                  render={({ field }) => (
-                    <Range
-                      label="ノイズ除去の強さ"
-                      value={field.value}
-                      onChange={field.onChange}
-                      min={0.1}
-                      max={1.0}
-                      step={0.05}
-                    />
-                  )}
-                />
-              </div>
-
-              <Button
-                type="submit"
-                disabled={form.formState.isSubmitting}
-                className="w-full rounded-none"
-              >
-                {form.formState.isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Please wait
-                  </>
-                ) : (
-                  'Generate'
-                )}
-              </Button>
+              )}
+            />
+            <div className="w-full h-full">
+              <img src={image} />
             </div>
-          </ResizablePanel>
-          <ResizableHandle />
-          <ResizablePanel defaultSize={80}>
-            <main className="flex flex-col h-full w-full">
-              <ScrollArea>
-                <div className="p-10">
-                  <div className="flex flex-col gap-4 pb-4">
-                    <FormField
-                      control={form.control}
-                      name="prompt"
-                      render={({ field }) => (
-                        <FormItemTextarea label="Prompt" {...field} />
-                      )}
-                    />
+          </div>
 
-                    <Button type="button">Generate random prompt</Button>
+          <div className="flex flex-row gap-4 pb-4">
+            <FormField
+              control={form.control}
+              name="inference"
+              render={({ field }) => (
+                <FormItemSelect
+                  label="推論モード"
+                  options={[
+                    { label: 'i2i', value: 'i2i' },
+                    { label: 't2i-scribble', value: 't2i-scribble' },
+                    { label: 'coloring', value: 'coloring' }
+                  ]}
+                  value={String(field.value)}
+                  onChange={field.onChange}
+                  className="max-w-xs"
+                />
+              )}
+            />
 
-                    <FormField
-                      control={form.control}
-                      name="negativePrompt"
-                      render={({ field }) => (
-                        <FormItemTextarea label="Negative prompt" {...field} />
-                      )}
-                    />
-                  </div>
+            <FormField
+              control={form.control}
+              name="prompt"
+              render={({ field }) => (
+                <FormItemTextarea
+                  label="Prompt"
+                  className="w-full max-w-sm"
+                  {...field}
+                />
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="cfgScale"
+              render={({ field }) => (
+                <Range
+                  label="cfg"
+                  value={field.value}
+                  onChange={field.onChange}
+                  min={0}
+                  max={20}
+                  className="w-full max-w-36"
+                />
+              )}
+            />
 
-                  <div className="grid grid-cols-2 pb-4">
-                    <FormField
-                      control={form.control}
-                      name="inputImage"
-                      render={({ field }) => (
-                        <DrawingCanvas
-                          setCanvasOutput={(dataUrl) => field.onChange(dataUrl)}
-                          guidedImage={field.value}
-                        />
-                      )}
-                    />
-                  </div>
+            <FormField
+              control={form.control}
+              name="denoisingStrength"
+              render={({ field }) => (
+                <Range
+                  label="ノイズ除去の強さ"
+                  value={field.value}
+                  onChange={field.onChange}
+                  min={0.1}
+                  max={1.0}
+                  step={0.05}
+                  className="w-full max-w-36"
+                />
+              )}
+            />
 
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <h2 className="text-2xl font-semibold tracking-tight">
-                        Generation history
-                      </h2>
-                    </div>
-                  </div>
-                  <Separator className="my-4" />
-                  <div className="flex flex-col gap-y-4">
-                    {generationHistory.map((history, i) => (
-                      <div key={i}>
-                        <GenerationHistory
-                          history={history}
-                          imageAsGuide={(image) => {
-                            form.setValue('inputImage', image);
-                          }}
-                        />
-                        <Separator className="my-4" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </ScrollArea>
-            </main>
-          </ResizablePanel>
-        </ResizablePanelGroup>
+            <FormField
+              control={form.control}
+              name="loraSelections"
+              render={({ field }) => (
+                <ModelSelect value={field.value} onChange={field.onChange} />
+              )}
+            />
+          </div>
+
+          <FormField
+            control={form.control}
+            name="negativePrompt"
+            render={({ field }) => (
+              <FormItemTextarea label="Negative prompt" {...field} />
+            )}
+          />
+        </main>
       </form>
     </Form>
   );

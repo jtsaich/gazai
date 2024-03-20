@@ -10,6 +10,7 @@ import {
   SheetTrigger
 } from '@/components/ui/sheet';
 import { auth } from '@/auth';
+import { ModeToggle } from '@/components/mode-toggle';
 
 import { SidebarNav } from './_components/sidebar-nav';
 import { UserNav } from './_components/user-nav';
@@ -58,6 +59,7 @@ export default async function ProtectedLayout({
 
             <div className="ml-auto flex items-center space-x-4">
               <UserNav />
+              <ModeToggle />
             </div>
           </div>
         </div>

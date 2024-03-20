@@ -1,5 +1,6 @@
-import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
+import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster } from '@/components/ui/sonner';
 
 export const metadata = {
   title: 'GAZAI.ai (alpha)',
@@ -14,8 +15,15 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="light">
       <body className="h-full">
-        {children}
-        <Toaster />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

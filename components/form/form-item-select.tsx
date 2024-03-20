@@ -18,14 +18,16 @@ const FormItemSelect = ({
   label,
   options,
   value,
-  onChange
+  onChange,
+  className
 }: {
   label?: string;
   options: SelectOption[];
   value?: string;
   onChange?(value: string): void;
+  className?: string;
 }) => (
-  <FormItem>
+  <FormItem className={className}>
     {label && <FormLabel>{label}</FormLabel>}
     <Select onValueChange={onChange} defaultValue={value}>
       <FormControl>
