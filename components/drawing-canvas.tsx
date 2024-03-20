@@ -68,6 +68,7 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   // handle window resize
   useEffect(() => {
     if (!containerDivRef.current) return;
+    console.debug('useEffect window size change');
     setStageSize({
       width: containerDivRef.current.clientWidth,
       height: containerDivRef.current.clientWidth
@@ -91,6 +92,7 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   useEffect(() => {
     if (!inputImage) return;
     if (!loadInputImage) return;
+    console.debug('useEffect output to input');
 
     setHistory((prev) => [
       ...prev.slice(0, historyStep + 1),
@@ -98,22 +100,23 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
     ]);
     setHistoryStep((prev) => prev + 1);
     toggleLoadInputImage();
-  }, [inputImage, loadInputImage]);
+  }, [historyStep, inputImage, loadInputImage, toggleLoadInputImage]);
 
   // get current state via history
   useEffect(() => {
     if (!history[historyStep]) return;
+    console.debug('useEffect current state');
 
     setCurrentState(history[historyStep]);
   }, [history, historyStep]);
 
-  // return data url result on current state change
   useEffect(() => {
     if (!stageRef.current) return;
+    console.debug('useEffect set data url');
 
     const uri = stageRef.current?.toDataURL();
     onChange?.(uri);
-  }, [stageRef, onChange, currentState]);
+  }, [stageRef, currentState]);
 
   const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
     isDrawing.current = true;
@@ -170,6 +173,8 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   };
 
   const handleClear = () => {
+    if (currentState.length === 0) return;
+
     setHistory((prev) => [...prev.slice(0, historyStep + 1), []]);
     setHistoryStep((prev) => prev + 1);
   };
@@ -237,13 +242,28 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
           <ToggleGroupItem value={Tool.Eraser} aria-label="Toggle eraser">
             <Eraser className="h-4 w-4" />
           </ToggleGroupItem>
-          <Button variant="outline" size="icon" onClick={handleUndo}>
+          <Button
+            variant="outline"
+            size="icon"
+            type="button"
+            onClick={handleUndo}
+          >
             <Undo className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="icon" onClick={handleRedo}>
+          <Button
+            variant="outline"
+            size="icon"
+            type="button"
+            onClick={handleRedo}
+          >
             <Redo className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="icon" onClick={handleClear}>
+          <Button
+            variant="outline"
+            size="icon"
+            type="button"
+            onClick={handleClear}
+          >
             <Trash2 className="h-4 w-4" />
           </Button>
         </ToggleGroup>

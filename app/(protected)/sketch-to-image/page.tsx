@@ -1,7 +1,7 @@
 'use client';
 
 import axios from 'axios';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ArrowLeftRight } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,9 +16,8 @@ import { Form, FormField } from '@/components/ui/form';
 import FormItemSelect from '@/components/form/form-item-select';
 import FormItemTextarea from '@/components/form/form-item-textarea';
 import { Button } from '@/components/ui/button';
-import { MockImage } from '@/mocks/Image';
+import { MockSDResponse } from '@/mocks/SDResponse';
 
-import { BetterUserPromptResult } from '../_types';
 import ModelSelect from '../_components/model-select';
 
 const enableTranslation = isTrue(process.env.NEXT_PUBLIC_ENABLE_TRANSLATION);
@@ -26,9 +25,10 @@ const enableTranslation = isTrue(process.env.NEXT_PUBLIC_ENABLE_TRANSLATION);
 export default function SketchToImage() {
   const updateInputImage = useStore((state) => state.updateInputImage);
   const toggleLoadInputImage = useStore((state) => state.toggleLoadInputImage);
-  const [image, setImage] = useState<string>(
-    `data:image/png;base64,${MockImage}`
-  );
+  const [outputImage, setOutputImage] = useState<string>();
+  console.debug(outputImage);
+
+  const formRef = useRef<HTMLFormElement>(null);
   const form = useForm<SketchToImageFormValues>({
     defaultValues: {
       batchSize: 1,
@@ -83,9 +83,17 @@ export default function SketchToImage() {
 
     console.debug(url, payload);
     try {
-      const response = await axios.post(url, payload);
-      const data: BetterUserPromptResult = response.data;
-      console.debug(data);
+      // const response = await axios.post(url, payload);
+      // const data: BetterUserPromptResult = response.data;
+      const responseData = MockSDResponse({
+        ...payload,
+        seed: Number(1),
+        samplerName: 'DPM++ SDE Karras',
+        nIter: 1,
+        steps: 20
+      });
+      console.debug(responseData);
+      setOutputImage(`/api/image/${responseData.images[0]}`);
     } catch (error) {
       console.error(error);
     }
@@ -93,7 +101,11 @@ export default function SketchToImage() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="h-full">
+      <form
+        ref={formRef}
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="h-full"
+      >
         <main className="flex flex-col h-full w-full p-10">
           <div className="grid grid-cols-2 text-center pb-4">
             <div></div>
@@ -101,7 +113,8 @@ export default function SketchToImage() {
               <Button
                 variant="outline"
                 onClick={() => {
-                  updateInputImage(image);
+                  if (!outputImage) return;
+                  updateInputImage(outputImage);
                   toggleLoadInputImage();
                 }}
               >
@@ -112,16 +125,17 @@ export default function SketchToImage() {
             <FormField
               control={form.control}
               name="inputImage"
-              render={() => (
+              render={({ field }) => (
                 <DrawingCanvas
                   onChange={(dataUrl) => {
-                    // setImage(dataUrl);
+                    field.onChange(dataUrl);
+                    form.handleSubmit(onSubmit)();
                   }}
                 />
               )}
             />
             <div className="w-full h-full">
-              <img src={image} className="w-full h-full" />
+              <img src={outputImage} className="w-full h-full" />
             </div>
           </div>
 
