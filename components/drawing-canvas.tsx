@@ -182,6 +182,8 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   return (
     <div ref={containerDivRef} className="relative aspect-square border">
       <Stage
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         ref={stageRef}
         width={stageSize.width}
         height={stageSize.height}
