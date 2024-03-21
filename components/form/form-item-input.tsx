@@ -3,10 +3,11 @@ import { Input, InputProps } from '../ui/input';
 
 interface FormIemInputProps extends InputProps {
   label?: string;
+  className?: string;
 }
 
-const FormItemInput = ({ label, ...rest }: FormIemInputProps) => (
-  <FormItem>
+const FormItemInput = ({ label, className, ...rest }: FormIemInputProps) => (
+  <FormItem className={className}>
     {label && <FormLabel>{label}</FormLabel>}
     <FormControl>
       <Input {...rest} />

@@ -6,7 +6,12 @@
     "ctrlnet",
     "decamelize",
     "denoising",
+    "easynegative",
     "gazai",
+    "hookform",
+    "Karras",
+    "Konva",
+    "lucide",
     "uuidv"
   ]
 }
