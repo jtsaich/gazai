@@ -8,9 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useToggle } from '@uidotdev/usehooks';
 
 import { LoRAs } from '@/app/constants';
-import { useStore } from '@/app/store/input-image';
 import Range from '@/components/form/range';
-import DrawingCanvas from '@/components/drawing-canvas';
 import { SketchToImageSchema, SketchToImageFormValues } from '@/schemas';
 import { isTrue } from '@/lib/utils';
 import { Form, FormField } from '@/components/ui/form';
@@ -28,11 +26,20 @@ import Spinner from '@/components/spinner';
 
 import ModelSelect from '../_components/model-select';
 
+import DrawingCanvas, {
+  useDrawingCanvasStore
+} from './_components/drawing-canvas';
+import DrawingToolbox from './_components/drawing-toolbox';
+
 const enableTranslation = isTrue(process.env.NEXT_PUBLIC_ENABLE_TRANSLATION);
 
 export default function SketchToImage() {
-  const updateInputImage = useStore((state) => state.updateInputImage);
-  const toggleLoadInputImage = useStore((state) => state.toggleLoadInputImage);
+  const updateInputImage = useDrawingCanvasStore(
+    (state) => state.updateInputImage
+  );
+  const toggleLoadInputImage = useDrawingCanvasStore(
+    (state) => state.toggleLoadInputImage
+  );
   const [outputImage, setOutputImage] = useState<string>();
   const [isGenerating, toggleGenerating] = useToggle(false);
   const [pendingChange, setPendingChange] = useState(false);
@@ -136,143 +143,151 @@ export default function SketchToImage() {
   };
 
   return (
-    <Form {...form}>
-      <form
-        ref={formRef}
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="h-full"
-      >
-        <main className="flex flex-col h-full w-full p-10">
-          <div className="grid grid-cols-2 text-center pb-4">
-            <div></div>
-            <div>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  if (!outputImage) return;
-                  updateInputImage(outputImage);
-                  toggleLoadInputImage();
-                }}
-              >
-                <ArrowLeftRight className="mr-2 h-4 w-4" />
-                Output to input
-              </Button>
-            </div>
-            <FormField
-              control={form.control}
-              name="inputImage"
-              render={({ field }) => (
-                <DrawingCanvas
-                  onChange={(dataUrl) => {
-                    field.onChange(dataUrl);
-                    // form.handleSubmit(onSubmit)();
+    <div className="relative">
+      <div className="absolute left top-20 flex flex-col">
+        <DrawingToolbox />
+      </div>
+      <Form {...form}>
+        <form
+          ref={formRef}
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="h-full"
+        >
+          <main className="flex flex-col h-full w-full p-10">
+            <div className="grid grid-cols-2 text-center pb-4">
+              <div></div>
+              <div>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    if (!outputImage) return;
+                    updateInputImage(outputImage);
+                    toggleLoadInputImage();
                   }}
+                >
+                  <ArrowLeftRight className="mr-2 h-4 w-4" />
+                  Output to input
+                </Button>
+              </div>
+              <FormField
+                control={form.control}
+                name="inputImage"
+                render={({ field }) => (
+                  <DrawingCanvas
+                    onChange={(dataUrl) => {
+                      field.onChange(dataUrl);
+                      // form.handleSubmit(onSubmit)();
+                    }}
+                  />
+                )}
+              />
+              <div className="relative w-full h-full">
+                {isGenerating ? (
+                  <div className="absolute w-full h-full flex items-center justify-center">
+                    <Spinner />
+                  </div>
+                ) : null}
+                <img src={outputImage} className="w-full h-full" />
+              </div>
+            </div>
+
+            <div className="flex flex-col lg:flex-row gap-x-4 pb-4">
+              <div className="flex-1 flex flex-row gap-x-4">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button type="button" size="icon" variant="secondary">
+                      <SlidersVertical />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent side="top" align="start" className="w-96">
+                    <FormField
+                      control={form.control}
+                      name="negativePrompt"
+                      render={({ field }) => (
+                        <FormItemTextarea label="Negative prompt" {...field} />
+                      )}
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormField
+                  control={form.control}
+                  name="inference"
+                  render={({ field }) => (
+                    <FormItemSelect
+                      label="推論モード"
+                      options={[
+                        { label: 'i2i', value: 'i2i' },
+                        { label: 't2i-scribble', value: 't2i-scribble' },
+                        { label: 'coloring', value: 'coloring' }
+                      ]}
+                      value={String(field.value)}
+                      onChange={field.onChange}
+                      className="max-w-xs"
+                    />
+                  )}
                 />
-              )}
-            />
-            <div className="relative w-full h-full">
-              {isGenerating ? (
-                <div className="absolute w-full h-full flex items-center justify-center">
-                  <Spinner />
-                </div>
-              ) : null}
-              <img src={outputImage} className="w-full h-full" />
+
+                <FormField
+                  control={form.control}
+                  name="prompt"
+                  render={({ field }) => (
+                    <FormItemInput
+                      label="Prompt"
+                      className="flex-1 w-full max-w-md"
+                      {...field}
+                    />
+                  )}
+                />
+              </div>
+              <div className="flex flex-row gap-x-4">
+                <FormField
+                  control={form.control}
+                  name="cfgScale"
+                  render={({ field }) => (
+                    <Range
+                      label="cfg"
+                      value={field.value}
+                      onChange={field.onChange}
+                      min={0}
+                      max={20}
+                      className="w-full max-w-36"
+                    />
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="denoisingStrength"
+                  render={({ field }) => (
+                    <Range
+                      label="ノイズ除去の強さ"
+                      value={field.value}
+                      onChange={field.onChange}
+                      min={0.1}
+                      max={1.0}
+                      step={0.05}
+                      className="w-full max-w-36"
+                    />
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="loraSelections"
+                  render={({ field }) => (
+                    <ModelSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="flex flex-col lg:flex-row gap-x-4 pb-4">
-            <div className="flex-1 flex flex-row gap-x-4">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button type="button" size="icon" variant="secondary">
-                    <SlidersVertical />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent side="top" align="start" className="w-96">
-                  <FormField
-                    control={form.control}
-                    name="negativePrompt"
-                    render={({ field }) => (
-                      <FormItemTextarea label="Negative prompt" {...field} />
-                    )}
-                  />
-                </PopoverContent>
-              </Popover>
-              <FormField
-                control={form.control}
-                name="inference"
-                render={({ field }) => (
-                  <FormItemSelect
-                    label="推論モード"
-                    options={[
-                      { label: 'i2i', value: 'i2i' },
-                      { label: 't2i-scribble', value: 't2i-scribble' },
-                      { label: 'coloring', value: 'coloring' }
-                    ]}
-                    value={String(field.value)}
-                    onChange={field.onChange}
-                    className="max-w-xs"
-                  />
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="prompt"
-                render={({ field }) => (
-                  <FormItemInput
-                    label="Prompt"
-                    className="flex-1 w-full max-w-md"
-                    {...field}
-                  />
-                )}
-              />
-            </div>
-            <div className="flex flex-row gap-x-4">
-              <FormField
-                control={form.control}
-                name="cfgScale"
-                render={({ field }) => (
-                  <Range
-                    label="cfg"
-                    value={field.value}
-                    onChange={field.onChange}
-                    min={0}
-                    max={20}
-                    className="w-full max-w-36"
-                  />
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="denoisingStrength"
-                render={({ field }) => (
-                  <Range
-                    label="ノイズ除去の強さ"
-                    value={field.value}
-                    onChange={field.onChange}
-                    min={0.1}
-                    max={1.0}
-                    step={0.05}
-                    className="w-full max-w-36"
-                  />
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="loraSelections"
-                render={({ field }) => (
-                  <ModelSelect value={field.value} onChange={field.onChange} />
-                )}
-              />
-            </div>
-          </div>
-
-          <Button type="submit">Submit</Button>
-        </main>
-      </form>
-    </Form>
+            <Button type="submit">Submit</Button>
+          </main>
+        </form>
+      </Form>
+    </div>
   );
 }

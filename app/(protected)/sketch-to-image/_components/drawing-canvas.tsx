@@ -4,22 +4,103 @@ import { useState, useRef, useEffect } from 'react';
 import { Stage, Layer, Line, Image } from 'react-konva';
 import Konva from 'konva';
 import { KonvaEventObject } from 'konva/lib/Node';
-import { Eraser, Menu, Pen, Redo, Trash2, Undo } from 'lucide-react';
 import useImage from 'use-image';
-import { HexColorPicker } from 'react-colorful';
+import { create } from 'zustand';
 
-import { useStore } from '@/app/store/input-image';
+import { Tool } from './drawing-toolbox';
 
-import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group';
-import { Button } from './ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { Slider } from './ui/slider';
-
-enum Tool {
-  Pen = 'pen',
-  Eraser = 'eraser',
-  Image = 'image'
+interface DrawingCanvasState {
+  tool: Tool;
+  color: string;
+  strokeWidth: number;
+  inputImage: string;
+  loadInputImage: boolean;
+  history: CanvasState[][];
+  historyStep: number;
+  currentState: CanvasState[];
 }
+
+interface DrawingCanvasAction {
+  setTool: (newTool: Tool) => void;
+  setColor: (newColor: string) => void;
+  setStrokeWidth: (newStrokeWidth: number) => void;
+  updateInputImage: (newInputImage: string) => void;
+  toggleLoadInputImage: () => void;
+  setHistory: (newHistory: CanvasState[][]) => void;
+  setHistoryStep: (newHistoryStep: number) => void;
+  setCurrentState: (newCurrentState: CanvasState[]) => void;
+
+  handleUndo: () => void;
+  handleRedo: () => void;
+  handleClear: () => void;
+  incrementHistoryWithCurrentState: () => void;
+}
+
+export const useDrawingCanvasStore = create<
+  DrawingCanvasState & DrawingCanvasAction
+>()((set) => ({
+  tool: Tool.Pen,
+  color: '#df4b26',
+  strokeWidth: 5,
+  inputImage: '',
+  loadInputImage: false,
+  history: [[]],
+  historyStep: 0,
+  currentState: [],
+  setTool: (newTool) => set({ tool: newTool }),
+  setColor: (newColor) => set({ color: newColor }),
+  setStrokeWidth: (newStrokeWidth) => set({ strokeWidth: newStrokeWidth }),
+  updateInputImage: (newInputImage) => set({ inputImage: newInputImage }),
+  toggleLoadInputImage: () =>
+    set((state) => ({ loadInputImage: !state.loadInputImage })),
+  setHistory: (newHistory) => set({ history: newHistory }),
+  setHistoryStep: (newHistoryStep) => set({ historyStep: newHistoryStep }),
+  setCurrentState: (newCurrentState) => set({ currentState: newCurrentState }),
+
+  handleUndo: () =>
+    set((state) => {
+      if (state.historyStep === 0) {
+        return {};
+      }
+      const newHistoryStep = state.historyStep - 1;
+      return {
+        historyStep: newHistoryStep,
+        currentState: state.history[newHistoryStep]
+      };
+    }), // Define the type of handleUndo as a function that takes no arguments and returns void
+
+  handleRedo: () =>
+    set((state) => {
+      if (state.historyStep === state.history.length - 1) {
+        return {};
+      }
+      const newHistoryStep = state.historyStep + 1;
+      return {
+        historyStep: newHistoryStep,
+        currentState: state.history[newHistoryStep]
+      };
+    }),
+
+  handleClear: () =>
+    set((state) => {
+      if (state.currentState.length === 0) return {};
+      const newHistoryStep = state.historyStep + 1;
+      return {
+        history: [...state.history.slice(0, newHistoryStep), []],
+        historyStep: newHistoryStep,
+        currentState: []
+      };
+    }),
+
+  incrementHistoryWithCurrentState: () =>
+    set((state) => ({
+      history: [
+        ...state.history.slice(0, state.historyStep + 1),
+        [...state.currentState]
+      ],
+      historyStep: state.historyStep + 1
+    }))
+}));
 
 interface CanvasLine {
   tool: Tool.Pen | Tool.Eraser;
@@ -53,24 +134,30 @@ const URLImage = ({
 };
 
 function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
-  const inputImage = useStore((state) => state.inputImage);
-  const loadInputImage = useStore((state) => state.loadInputImage);
-  const toggleLoadInputImage = useStore((state) => state.toggleLoadInputImage);
+  const tool = useDrawingCanvasStore((state) => state.tool);
+  const color = useDrawingCanvasStore((state) => state.color);
+  const strokeWidth = useDrawingCanvasStore((state) => state.strokeWidth);
+  const inputImage = useDrawingCanvasStore((state) => state.inputImage);
+  const loadInputImage = useDrawingCanvasStore((state) => state.loadInputImage);
+  const historyStep = useDrawingCanvasStore((state) => state.historyStep);
+  const currentState = useDrawingCanvasStore((state) => state.currentState);
+
+  const setCurrentState = useDrawingCanvasStore(
+    (state) => state.setCurrentState
+  );
+  const incrementHistoryWithCurrentState = useDrawingCanvasStore(
+    (state) => state.incrementHistoryWithCurrentState
+  );
+
+  const toggleLoadInputImage = useDrawingCanvasStore(
+    (state) => state.toggleLoadInputImage
+  );
 
   const containerDivRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<Konva.Node>(null);
   const [stageSize, setStageSize] = useState({ width: 1, height: 1 });
 
-  const [tool, setTool] = useState(Tool.Pen);
-  const [color, setColor] = useState('#df4b26');
-  const [strokeWidth, setStrokeWidth] = useState(5);
   const isDrawing = useRef(false);
-
-  const [history, setHistory] = useState<CanvasState[][]>([[]]);
-  const [historyStep, setHistoryStep] = useState(0);
-  const [currentState, setCurrentState] = useState<CanvasState[]>(
-    history[historyStep]
-  );
 
   // handle window resize
   useEffect(() => {
@@ -101,26 +188,22 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
     if (!loadInputImage) return;
     // console.debug('useEffect output to input');
 
-    setHistory((prev) => [
-      ...prev.slice(0, historyStep + 1),
-      [{ tool: Tool.Image, image: inputImage }]
-    ]);
-    setHistoryStep((prev) => prev + 1);
+    incrementHistoryWithCurrentState();
     toggleLoadInputImage();
   }, [historyStep, inputImage, loadInputImage, toggleLoadInputImage]);
 
   // get current state via history
-  useEffect(() => {
-    if (!history[historyStep]) return;
-    // console.debug('useEffect current state');
+  // useEffect(() => {
+  //   if (!history[historyStep]) return;
+  //   // console.debug('useEffect current state');
 
-    setCurrentState(history[historyStep]);
+  //   setCurrentState(history[historyStep]);
 
-    if (!stageRef.current) return;
+  //   if (!stageRef.current) return;
 
-    const uri = stageRef.current?.toDataURL();
-    onChange?.(uri);
-  }, [history, historyStep]);
+  //   const uri = stageRef.current?.toDataURL();
+  //   onChange?.(uri);
+  // }, [history, historyStep]);
 
   // useEffect(() => {
   //   if (!stageRef.current) return;
@@ -166,32 +249,7 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
 
   const handleMouseUp = () => {
     isDrawing.current = false;
-    setHistory((prev) => [
-      ...prev.slice(0, historyStep + 1),
-      [...currentState]
-    ]);
-    setHistoryStep((prev) => prev + 1);
-  };
-
-  const handleUndo = () => {
-    if (historyStep === 0) {
-      return;
-    }
-    setHistoryStep((prev) => prev - 1);
-  };
-
-  const handleRedo = () => {
-    if (historyStep === history.length - 1) {
-      return;
-    }
-    setHistoryStep((prev) => prev + 1);
-  };
-
-  const handleClear = () => {
-    if (currentState.length === 0) return;
-
-    setHistory((prev) => [...prev.slice(0, historyStep + 1), []]);
-    setHistoryStep((prev) => prev + 1);
+    incrementHistoryWithCurrentState();
   };
 
   return (
@@ -240,81 +298,6 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
           })}
         </Layer>
       </Stage>
-
-      <div className="absolute left-1 top-1 flex flex-col">
-        <ToggleGroup
-          variant="outline"
-          type="single"
-          orientation="vertical"
-          className="flex-col"
-          value={tool}
-          onValueChange={(value) => {
-            if (!value) return;
-            setTool(value as Tool);
-          }}
-        >
-          <ToggleGroupItem value={Tool.Pen} aria-label="Toggle pen">
-            <Pen className="h-4 w-4" />
-          </ToggleGroupItem>
-          <ToggleGroupItem value={Tool.Eraser} aria-label="Toggle eraser">
-            <Eraser className="h-4 w-4" />
-          </ToggleGroupItem>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="icon" type="button">
-                <div
-                  className="h-5 w-5 rounded-sm"
-                  style={{ backgroundColor: color }}
-                />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent side="right" align="start">
-              <HexColorPicker color={color} onChange={setColor} />
-            </PopoverContent>
-          </Popover>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="icon" type="button">
-                <Menu className="h-4 w-4" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent side="right" align="start">
-              <Slider
-                min={1}
-                max={72}
-                value={[strokeWidth]}
-                onValueChange={(value) => {
-                  setStrokeWidth(value[0]);
-                }}
-              />
-            </PopoverContent>
-          </Popover>
-          <Button
-            variant="outline"
-            size="icon"
-            type="button"
-            onClick={handleUndo}
-          >
-            <Undo className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            type="button"
-            onClick={handleRedo}
-          >
-            <Redo className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            type="button"
-            onClick={handleClear}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </ToggleGroup>
-      </div>
     </div>
   );
 }
