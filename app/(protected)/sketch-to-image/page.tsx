@@ -144,7 +144,7 @@ export default function SketchToImage() {
 
   return (
     <div className="relative">
-      <div className="absolute left top-20 flex flex-col">
+      <div className="absolute left-1 top-20 flex flex-col">
         <DrawingToolbox />
       </div>
       <Form {...form}>
@@ -153,7 +153,7 @@ export default function SketchToImage() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="h-full"
         >
-          <main className="flex flex-col h-full w-full p-10">
+          <main className="flex flex-col h-full w-full px-12 py-10">
             <div className="grid grid-cols-2 text-center pb-4">
               <div></div>
               <div>
