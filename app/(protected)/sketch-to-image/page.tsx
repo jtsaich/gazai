@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/popover';
 import FormItemTextarea from '@/components/form/form-item-textarea';
 import Spinner from '@/components/spinner';
+// import { MockImage } from '@/mocks/Image';
 // import { MockSDResponse } from '@/mocks/SDResponse';
 
 import ModelSelect from '../_components/model-select';
@@ -30,16 +31,10 @@ import DrawingCanvas, {
   useDrawingCanvasStore
 } from './_components/drawing-canvas';
 import DrawingToolbox from './_components/drawing-toolbox';
-
 const enableTranslation = isTrue(process.env.NEXT_PUBLIC_ENABLE_TRANSLATION);
 
 export default function SketchToImage() {
-  const updateInputImage = useDrawingCanvasStore(
-    (state) => state.updateInputImage
-  );
-  const toggleLoadInputImage = useDrawingCanvasStore(
-    (state) => state.toggleLoadInputImage
-  );
+  const setInputImage = useDrawingCanvasStore((state) => state.setInputImage);
   const [outputImage, setOutputImage] = useState<string>();
   const [isGenerating, toggleGenerating] = useToggle(false);
   const [pendingChange, setPendingChange] = useState(false);
@@ -161,8 +156,7 @@ export default function SketchToImage() {
                   variant="outline"
                   onClick={() => {
                     if (!outputImage) return;
-                    updateInputImage(outputImage);
-                    toggleLoadInputImage();
+                    setInputImage(outputImage);
                   }}
                 >
                   <ArrowLeftRight className="mr-2 h-4 w-4" />

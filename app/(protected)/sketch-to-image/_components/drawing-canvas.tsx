@@ -14,7 +14,6 @@ interface DrawingCanvasState {
   color: string;
   strokeWidth: number;
   inputImage: string;
-  loadInputImage: boolean;
   history: CanvasState[][];
   historyStep: number;
   currentState: CanvasState[];
@@ -24,12 +23,12 @@ interface DrawingCanvasAction {
   setTool: (newTool: Tool) => void;
   setColor: (newColor: string) => void;
   setStrokeWidth: (newStrokeWidth: number) => void;
-  updateInputImage: (newInputImage: string) => void;
-  toggleLoadInputImage: () => void;
+  setInputImage: (newInputImage: string) => void;
   setHistory: (newHistory: CanvasState[][]) => void;
   setHistoryStep: (newHistoryStep: number) => void;
   setCurrentState: (newCurrentState: CanvasState[]) => void;
 
+  handleUploadImage: () => void;
   handleUndo: () => void;
   handleRedo: () => void;
   handleClear: () => void;
@@ -50,12 +49,36 @@ export const useDrawingCanvasStore = create<
   setTool: (newTool) => set({ tool: newTool }),
   setColor: (newColor) => set({ color: newColor }),
   setStrokeWidth: (newStrokeWidth) => set({ strokeWidth: newStrokeWidth }),
-  updateInputImage: (newInputImage) => set({ inputImage: newInputImage }),
-  toggleLoadInputImage: () =>
-    set((state) => ({ loadInputImage: !state.loadInputImage })),
+  setInputImage: (newInputImage) =>
+    set((state) => {
+      const newState: CanvasImage[] = [
+        {
+          tool: Tool.Image,
+          image: newInputImage
+        }
+      ];
+      const newHistoryStep = state.historyStep + 1;
+      return {
+        history: [...state.history.slice(0, newHistoryStep), newState],
+        historyStep: newHistoryStep,
+        currentState: newState
+      };
+    }),
   setHistory: (newHistory) => set({ history: newHistory }),
   setHistoryStep: (newHistoryStep) => set({ historyStep: newHistoryStep }),
   setCurrentState: (newCurrentState) => set({ currentState: newCurrentState }),
+
+  handleUploadImage: () =>
+    set((state) => {
+      if (state.historyStep === 0) {
+        return {};
+      }
+      const newHistoryStep = state.historyStep - 1;
+      return {
+        historyStep: newHistoryStep,
+        currentState: state.history[newHistoryStep]
+      };
+    }),
 
   handleUndo: () =>
     set((state) => {
@@ -67,7 +90,7 @@ export const useDrawingCanvasStore = create<
         historyStep: newHistoryStep,
         currentState: state.history[newHistoryStep]
       };
-    }), // Define the type of handleUndo as a function that takes no arguments and returns void
+    }),
 
   handleRedo: () =>
     set((state) => {
@@ -137,9 +160,6 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   const tool = useDrawingCanvasStore((state) => state.tool);
   const color = useDrawingCanvasStore((state) => state.color);
   const strokeWidth = useDrawingCanvasStore((state) => state.strokeWidth);
-  const inputImage = useDrawingCanvasStore((state) => state.inputImage);
-  const loadInputImage = useDrawingCanvasStore((state) => state.loadInputImage);
-  const historyStep = useDrawingCanvasStore((state) => state.historyStep);
   const currentState = useDrawingCanvasStore((state) => state.currentState);
 
   const setCurrentState = useDrawingCanvasStore(
@@ -147,10 +167,6 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   );
   const incrementHistoryWithCurrentState = useDrawingCanvasStore(
     (state) => state.incrementHistoryWithCurrentState
-  );
-
-  const toggleLoadInputImage = useDrawingCanvasStore(
-    (state) => state.toggleLoadInputImage
   );
 
   const containerDivRef = useRef<HTMLDivElement>(null);
@@ -181,16 +197,6 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
       window.removeEventListener('resize', handleResize);
     };
   }, [containerDivRef]);
-
-  // handle output to input
-  useEffect(() => {
-    if (!inputImage) return;
-    if (!loadInputImage) return;
-    // console.debug('useEffect output to input');
-
-    incrementHistoryWithCurrentState();
-    toggleLoadInputImage();
-  }, [historyStep, inputImage, loadInputImage, toggleLoadInputImage]);
 
   // get current state via history
   // useEffect(() => {

@@ -1,5 +1,5 @@
 import { HexColorPicker } from 'react-colorful';
-import { Pen, Eraser, Menu, Undo, Redo, Trash2 } from 'lucide-react';
+import { Pen, Eraser, Menu, Undo, Redo, Trash2, ImageUp } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -26,6 +26,9 @@ export default function DrawingToolbox() {
   const setColor = useDrawingCanvasStore((state) => state.setColor);
   const setStrokeWidth = useDrawingCanvasStore((state) => state.setStrokeWidth);
 
+  const handleUploadImage = useDrawingCanvasStore(
+    (state) => state.handleUploadImage
+  );
   const handleUndo = useDrawingCanvasStore((state) => state.handleUndo);
   const handleRedo = useDrawingCanvasStore((state) => state.handleRedo);
   const handleClear = useDrawingCanvasStore((state) => state.handleClear);
@@ -78,6 +81,14 @@ export default function DrawingToolbox() {
           />
         </PopoverContent>
       </Popover>
+      <Button
+        variant="outline"
+        size="icon"
+        type="button"
+        onClick={() => handleUploadImage()}
+      >
+        <ImageUp className="h-4 w-4" />
+      </Button>
       <Button
         variant="outline"
         size="icon"
