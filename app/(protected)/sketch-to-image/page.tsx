@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { ArrowLeftRight, SlidersVertical } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useToggle } from '@uidotdev/usehooks';
+import debounce from 'debounce';
 
 import { LoRAs } from '@/app/constants';
 import Range from '@/components/form/range';
@@ -168,10 +169,9 @@ export default function SketchToImage() {
                 name="inputImage"
                 render={({ field }) => (
                   <DrawingCanvas
-                    onChange={(dataUrl) => {
+                    onChange={debounce((dataUrl) => {
                       field.onChange(dataUrl);
-                      // form.handleSubmit(onSubmit)();
-                    }}
+                    }, 1000)}
                   />
                 )}
               />

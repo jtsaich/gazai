@@ -14,6 +14,7 @@ interface DrawingCanvasState {
   color: string;
   strokeWidth: number;
   inputImage: string;
+  stage?: typeof Stage;
   history: CanvasState[][];
   historyStep: number;
   currentState: CanvasState[];
@@ -24,6 +25,7 @@ interface DrawingCanvasAction {
   setColor: (newColor: string) => void;
   setStrokeWidth: (newStrokeWidth: number) => void;
   setInputImage: (newInputImage: string) => void;
+  setStage: (newStage: typeof Stage) => void;
   setHistory: (newHistory: CanvasState[][]) => void;
   setHistoryStep: (newHistoryStep: number) => void;
   setCurrentState: (newCurrentState: CanvasState[]) => void;
@@ -43,6 +45,7 @@ export const useDrawingCanvasStore = create<
   strokeWidth: 5,
   inputImage: '',
   loadInputImage: false,
+  stage: undefined,
   history: [[]],
   historyStep: 0,
   currentState: [],
@@ -64,6 +67,7 @@ export const useDrawingCanvasStore = create<
         currentState: newState
       };
     }),
+  setStage: (newStage) => set({ stage: newStage }),
   setHistory: (newHistory) => set({ history: newHistory }),
   setHistoryStep: (newHistoryStep) => set({ historyStep: newHistoryStep }),
   setCurrentState: (newCurrentState) => set({ currentState: newCurrentState }),
@@ -199,23 +203,12 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   }, [containerDivRef]);
 
   // get current state via history
-  // useEffect(() => {
-  //   if (!history[historyStep]) return;
-  //   // console.debug('useEffect current state');
+  useEffect(() => {
+    if (!stageRef.current) return;
 
-  //   setCurrentState(history[historyStep]);
-
-  //   if (!stageRef.current) return;
-
-  //   const uri = stageRef.current?.toDataURL();
-  //   onChange?.(uri);
-  // }, [history, historyStep]);
-
-  // useEffect(() => {
-  //   if (!stageRef.current) return;
-  //   // console.debug('useEffect set data url');
-
-  // }, [stageRef, history]);
+    const uri = stageRef.current?.toDataURL();
+    onChange?.(uri);
+  }, [stageRef, currentState]);
 
   const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
     isDrawing.current = true;
