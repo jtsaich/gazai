@@ -30,7 +30,7 @@ interface DrawingCanvasAction {
   setHistoryStep: (newHistoryStep: number) => void;
   setCurrentState: (newCurrentState: CanvasState[]) => void;
 
-  handleUploadImage: () => void;
+  handleUploadImage: (dataUrl: string) => void;
   handleUndo: () => void;
   handleRedo: () => void;
   handleClear: () => void;
@@ -72,15 +72,19 @@ export const useDrawingCanvasStore = create<
   setHistoryStep: (newHistoryStep) => set({ historyStep: newHistoryStep }),
   setCurrentState: (newCurrentState) => set({ currentState: newCurrentState }),
 
-  handleUploadImage: () =>
+  handleUploadImage: (dataUrl) =>
     set((state) => {
-      if (state.historyStep === 0) {
-        return {};
-      }
-      const newHistoryStep = state.historyStep - 1;
+      const newState: CanvasImage[] = [
+        {
+          tool: Tool.Image,
+          image: dataUrl
+        }
+      ];
+      const newHistoryStep = state.historyStep + 1;
       return {
+        history: [...state.history.slice(0, newHistoryStep), newState],
         historyStep: newHistoryStep,
-        currentState: state.history[newHistoryStep]
+        currentState: newState
       };
     }),
 
@@ -150,14 +154,18 @@ function isCanvasLine(obj: CanvasState): obj is CanvasLine {
 const URLImage = ({
   image,
   width,
-  height
+  height,
+  draggable = false
 }: {
   image: string;
   width: number;
   height: number;
+  draggable?: boolean;
 }) => {
   const [img] = useImage(image);
-  return <Image image={img} width={width} height={height} />;
+  return (
+    <Image image={img} width={width} height={height} draggable={draggable} />
+  );
 };
 
 function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
@@ -178,11 +186,11 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   const [stageSize, setStageSize] = useState({ width: 1, height: 1 });
 
   const isDrawing = useRef(false);
+  const isDragging = useRef(false);
 
   // handle window resize
   useEffect(() => {
     if (!containerDivRef.current) return;
-    // console.debug('useEffect window size change');
     setStageSize({
       width: containerDivRef.current.clientWidth,
       height: containerDivRef.current.clientWidth
@@ -211,19 +219,22 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   }, [stageRef, currentState]);
 
   const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
-    isDrawing.current = true;
-    const pos = e.target.getStage()?.getPointerPosition();
-    if (!pos) return;
+    if (tool === Tool.Pen || tool === Tool.Eraser) {
+      isDrawing.current = true;
+      const pos = e.target.getStage()?.getPointerPosition();
+      if (!pos) return;
 
-    setCurrentState([
-      ...currentState,
-      {
-        tool,
-        points: [pos.x, pos.y],
-        color: color,
-        strokeWidth: strokeWidth
-      } as CanvasLine
-    ]);
+      setCurrentState([
+        ...currentState,
+        {
+          nodeId: e.target._id,
+          tool,
+          points: [pos.x, pos.y],
+          color: color,
+          strokeWidth: strokeWidth
+        } as CanvasLine
+      ]);
+    }
   };
 
   const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
@@ -289,6 +300,7 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
                     image={node.image}
                     width={stageSize.width}
                     height={stageSize.height}
+                    draggable={tool === Tool.Move}
                   />
                 );
               default:

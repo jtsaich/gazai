@@ -1,5 +1,15 @@
+import { useRef } from 'react';
 import { HexColorPicker } from 'react-colorful';
-import { Pen, Eraser, Menu, Undo, Redo, Trash2, ImageUp } from 'lucide-react';
+import {
+  Pen,
+  Eraser,
+  Menu,
+  Undo,
+  Redo,
+  Trash2,
+  ImageUp,
+  Move
+} from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -12,6 +22,7 @@ import { Slider } from '@/components/ui/slider';
 import { useDrawingCanvasStore } from '@/app/(protected)/sketch-to-image/_components/drawing-canvas';
 
 export enum Tool {
+  Move = 'move',
   Pen = 'pen',
   Eraser = 'eraser',
   Image = 'image'
@@ -33,6 +44,8 @@ export default function DrawingToolbox() {
   const handleRedo = useDrawingCanvasStore((state) => state.handleRedo);
   const handleClear = useDrawingCanvasStore((state) => state.handleClear);
 
+  const uploadImageRef = useRef<HTMLInputElement>(null);
+
   return (
     <ToggleGroup
       variant="outline"
@@ -45,6 +58,9 @@ export default function DrawingToolbox() {
         setTool(value as Tool);
       }}
     >
+      <ToggleGroupItem value={Tool.Move} aria-label="Toggle move">
+        <Move className="h-4 w-4" />
+      </ToggleGroupItem>
       <ToggleGroupItem value={Tool.Pen} aria-label="Toggle pen">
         <Pen className="h-4 w-4" />
       </ToggleGroupItem>
@@ -81,11 +97,29 @@ export default function DrawingToolbox() {
           />
         </PopoverContent>
       </Popover>
+      <input
+        ref={uploadImageRef}
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          if (!e.target.files) return;
+
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const dataUrl = e.target!.result as string;
+            handleUploadImage(dataUrl);
+          };
+          reader.readAsDataURL(e.target.files[0]);
+        }}
+        hidden
+      />
       <Button
         variant="outline"
         size="icon"
         type="button"
-        onClick={() => handleUploadImage()}
+        onClick={() => {
+          uploadImageRef.current?.click();
+        }}
       >
         <ImageUp className="h-4 w-4" />
       </Button>
