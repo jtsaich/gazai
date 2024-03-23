@@ -1,10 +1,11 @@
 'use client';
 
 import axios from 'axios';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ArrowLeftRight, SlidersVertical } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useToggle } from '@uidotdev/usehooks';
 
 import { LoRAs } from '@/app/constants';
 import { useStore } from '@/app/store/input-image';
@@ -22,7 +23,8 @@ import {
   PopoverTrigger
 } from '@/components/ui/popover';
 import FormItemTextarea from '@/components/form/form-item-textarea';
-import { MockSDResponse } from '@/mocks/SDResponse';
+import Spinner from '@/components/spinner';
+// import { MockSDResponse } from '@/mocks/SDResponse';
 
 import ModelSelect from '../_components/model-select';
 
@@ -32,7 +34,19 @@ export default function SketchToImage() {
   const updateInputImage = useStore((state) => state.updateInputImage);
   const toggleLoadInputImage = useStore((state) => state.toggleLoadInputImage);
   const [outputImage, setOutputImage] = useState<string>();
-  console.debug(outputImage);
+  const [isGenerating, toggleGenerating] = useToggle(false);
+  const [pendingChange, setPendingChange] = useState(false);
+
+  useEffect(() => {
+    if (isGenerating) {
+      return;
+    }
+
+    if (pendingChange) {
+      form.handleSubmit(onSubmit)();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isGenerating, pendingChange]);
 
   const formRef = useRef<HTMLFormElement>(null);
   const form = useForm<SketchToImageFormValues>({
@@ -52,6 +66,14 @@ export default function SketchToImage() {
   });
 
   const onSubmit = async (data: SketchToImageFormValues) => {
+    if (isGenerating) {
+      setPendingChange(true);
+      return;
+    }
+
+    setPendingChange(false);
+    toggleGenerating();
+
     let prompt = data.prompt;
     if (enableTranslation) {
       try {
@@ -69,40 +91,48 @@ export default function SketchToImage() {
     prompt = promptPrefix + data.prompt;
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { loraSelections, inference, inputImage, ...payload } = {
+    const { loraSelections, inference, ...payload } = {
       ...data,
       prompt,
-      initImages: [data.inputImage]
+      inputImage: data.inputImage.replace('data:image/png;base64,', '')
     };
 
     let url = '';
     switch (inference) {
       case 'i2i':
-        url = '/api/gen/img2img';
+        url = 'gen/img2img';
         break;
       case 't2i-scribble':
-        url = '/api/gen/tex2img_ctrlnet';
+        url = 'gen/tex2img_ctrlnet';
         break;
       case 'coloring':
-        url = '/api/gen/coloring_ctrlnet';
+        url = 'gen/coloring_ctrlnet';
     }
 
     console.debug(url, payload);
     try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_GAZAI_API}/${url}`,
+        payload
+      );
+      const responseData = response.data;
+
       // const response = await axios.post(url, payload);
       // const data: BetterUserPromptResult = response.data;
-      const responseData = MockSDResponse({
-        ...payload,
-        seed: Number(1),
-        samplerName: 'DPM++ SDE Karras',
-        nIter: 1,
-        steps: 20
-      });
-      console.debug(responseData);
-      setOutputImage(`/api/image/${responseData.images[0]}`);
+      // const responseData = MockSDResponse({
+      //   ...payload,
+      //   seed: Number(1),
+      //   samplerName: 'DPM++ SDE Karras',
+      //   nIter: 1,
+      //   steps: 20
+      // });
+      // console.debug(responseData);
+      setOutputImage(`data:image/png;base64,${responseData.images[0]}`);
     } catch (error) {
       console.error(error);
     }
+
+    toggleGenerating();
   };
 
   return (
@@ -135,12 +165,17 @@ export default function SketchToImage() {
                 <DrawingCanvas
                   onChange={(dataUrl) => {
                     field.onChange(dataUrl);
-                    form.handleSubmit(onSubmit)();
+                    // form.handleSubmit(onSubmit)();
                   }}
                 />
               )}
             />
-            <div className="w-full h-full">
+            <div className="relative w-full h-full">
+              {isGenerating ? (
+                <div className="absolute w-full h-full flex items-center justify-center">
+                  <Spinner />
+                </div>
+              ) : null}
               <img src={outputImage} className="w-full h-full" />
             </div>
           </div>
@@ -234,6 +269,8 @@ export default function SketchToImage() {
               />
             </div>
           </div>
+
+          <Button type="submit">Submit</Button>
         </main>
       </form>
     </Form>

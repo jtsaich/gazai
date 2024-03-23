@@ -4,13 +4,16 @@ import { useState, useRef, useEffect } from 'react';
 import { Stage, Layer, Line, Image } from 'react-konva';
 import Konva from 'konva';
 import { KonvaEventObject } from 'konva/lib/Node';
-import { Eraser, Pen, Redo, Trash2, Undo } from 'lucide-react';
+import { Eraser, Menu, Pen, Redo, Trash2, Undo } from 'lucide-react';
 import useImage from 'use-image';
+import { HexColorPicker } from 'react-colorful';
 
 import { useStore } from '@/app/store/input-image';
 
 import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group';
 import { Button } from './ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Slider } from './ui/slider';
 
 enum Tool {
   Pen = 'pen',
@@ -21,6 +24,8 @@ enum Tool {
 interface CanvasLine {
   tool: Tool.Pen | Tool.Eraser;
   points: number[];
+  color: string;
+  strokeWidth: number;
 }
 
 interface CanvasImage {
@@ -57,6 +62,8 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   const [stageSize, setStageSize] = useState({ width: 1, height: 1 });
 
   const [tool, setTool] = useState(Tool.Pen);
+  const [color, setColor] = useState('#df4b26');
+  const [strokeWidth, setStrokeWidth] = useState(5);
   const isDrawing = useRef(false);
 
   const [history, setHistory] = useState<CanvasState[][]>([[]]);
@@ -68,7 +75,7 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   // handle window resize
   useEffect(() => {
     if (!containerDivRef.current) return;
-    console.debug('useEffect window size change');
+    // console.debug('useEffect window size change');
     setStageSize({
       width: containerDivRef.current.clientWidth,
       height: containerDivRef.current.clientWidth
@@ -92,7 +99,7 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   useEffect(() => {
     if (!inputImage) return;
     if (!loadInputImage) return;
-    console.debug('useEffect output to input');
+    // console.debug('useEffect output to input');
 
     setHistory((prev) => [
       ...prev.slice(0, historyStep + 1),
@@ -105,18 +112,21 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   // get current state via history
   useEffect(() => {
     if (!history[historyStep]) return;
-    console.debug('useEffect current state');
+    // console.debug('useEffect current state');
 
     setCurrentState(history[historyStep]);
-  }, [history, historyStep]);
 
-  useEffect(() => {
     if (!stageRef.current) return;
-    console.debug('useEffect set data url');
 
     const uri = stageRef.current?.toDataURL();
     onChange?.(uri);
-  }, [stageRef, currentState]);
+  }, [history, historyStep]);
+
+  // useEffect(() => {
+  //   if (!stageRef.current) return;
+  //   // console.debug('useEffect set data url');
+
+  // }, [stageRef, history]);
 
   const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
     isDrawing.current = true;
@@ -125,7 +135,12 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
 
     setCurrentState([
       ...currentState,
-      { tool, points: [pos.x, pos.y] } as CanvasLine
+      {
+        tool,
+        points: [pos.x, pos.y],
+        color: color,
+        strokeWidth: strokeWidth
+      } as CanvasLine
     ]);
   };
 
@@ -200,8 +215,8 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
                   <Line
                     key={i}
                     points={node.points}
-                    stroke="#df4b26"
-                    strokeWidth={5}
+                    stroke={node.color}
+                    strokeWidth={node.strokeWidth}
                     tension={0.5}
                     lineCap="round"
                     lineJoin="round"
@@ -244,6 +259,36 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
           <ToggleGroupItem value={Tool.Eraser} aria-label="Toggle eraser">
             <Eraser className="h-4 w-4" />
           </ToggleGroupItem>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="icon" type="button">
+                <div
+                  className="h-5 w-5 rounded-sm"
+                  style={{ backgroundColor: color }}
+                />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent side="right" align="start">
+              <HexColorPicker color={color} onChange={setColor} />
+            </PopoverContent>
+          </Popover>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="icon" type="button">
+                <Menu className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent side="right" align="start">
+              <Slider
+                min={1}
+                max={72}
+                value={[strokeWidth]}
+                onValueChange={(value) => {
+                  setStrokeWidth(value[0]);
+                }}
+              />
+            </PopoverContent>
+          </Popover>
           <Button
             variant="outline"
             size="icon"
