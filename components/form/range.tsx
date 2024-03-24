@@ -21,7 +21,11 @@ const Range = ({
   className
 }: RangeProps) => (
   <FormItem className={className}>
-    {label && <FormLabel>{label}</FormLabel>}
+    {label && (
+      <FormLabel>
+        {label}: <span className="inline-block w-8">{value}</span>
+      </FormLabel>
+    )}
     <FormControl>
       <Slider
         defaultValue={value ? [value] : undefined}

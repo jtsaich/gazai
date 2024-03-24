@@ -51,7 +51,6 @@ export default function SketchToImage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isGenerating, pendingChange]);
 
-  const formRef = useRef<HTMLFormElement>(null);
   const form = useForm<SketchToImageFormValues>({
     defaultValues: {
       batchSize: 1,
@@ -144,16 +143,13 @@ export default function SketchToImage() {
         <DrawingToolbox />
       </div>
       <Form {...form}>
-        <form
-          ref={formRef}
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="h-full"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="h-full">
           <main className="flex flex-col h-full w-full px-12 py-10">
-            <div className="grid grid-cols-2 text-center pb-4">
+            <div className="grid md:grid-cols-2 text-center pb-4">
               <div></div>
               <div>
                 <Button
+                  type="button"
                   variant="outline"
                   onClick={() => {
                     if (!outputImage) return;
@@ -171,6 +167,7 @@ export default function SketchToImage() {
                   <DrawingCanvas
                     onChange={debounce((dataUrl) => {
                       field.onChange(dataUrl);
+                      form.handleSubmit(onSubmit)();
                     }, 1000)}
                   />
                 )}
@@ -181,7 +178,10 @@ export default function SketchToImage() {
                     <Spinner />
                   </div>
                 ) : null}
-                <img src={outputImage} className="w-full h-full" />
+                <img
+                  src={outputImage}
+                  className="w-full h-full aspect-square"
+                />
               </div>
             </div>
 
@@ -193,12 +193,27 @@ export default function SketchToImage() {
                       <SlidersVertical />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent side="top" align="start" className="w-96">
+                  <PopoverContent
+                    side="top"
+                    align="start"
+                    className="w-96 space-y-4"
+                  >
                     <FormField
                       control={form.control}
                       name="negativePrompt"
                       render={({ field }) => (
                         <FormItemTextarea label="Negative prompt" {...field} />
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="loraSelections"
+                      render={({ field }) => (
+                        <ModelSelect
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
                       )}
                     />
                   </PopoverContent>
@@ -244,7 +259,7 @@ export default function SketchToImage() {
                       onChange={field.onChange}
                       min={0}
                       max={20}
-                      className="w-full max-w-36"
+                      className="w-40"
                     />
                   )}
                 />
@@ -260,25 +275,12 @@ export default function SketchToImage() {
                       min={0.1}
                       max={1.0}
                       step={0.05}
-                      className="w-full max-w-36"
-                    />
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="loraSelections"
-                  render={({ field }) => (
-                    <ModelSelect
-                      value={field.value}
-                      onChange={field.onChange}
+                      className="w-40"
                     />
                   )}
                 />
               </div>
             </div>
-
-            <Button type="submit">Submit</Button>
           </main>
         </form>
       </Form>

@@ -214,6 +214,10 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   useEffect(() => {
     if (!stageRef.current) return;
 
+    if (currentState.length === 0) {
+      return;
+    }
+
     const uri = stageRef.current?.toDataURL();
     onChange?.(uri);
   }, [stageRef, currentState]);
