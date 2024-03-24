@@ -1,7 +1,7 @@
 'use client';
 
 import axios from 'axios';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ArrowLeftRight, SlidersVertical } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
