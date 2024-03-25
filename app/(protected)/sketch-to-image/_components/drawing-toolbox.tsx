@@ -107,7 +107,17 @@ export default function DrawingToolbox() {
           const reader = new FileReader();
           reader.onload = (e) => {
             const dataUrl = e.target!.result as string;
-            handleUploadImage(dataUrl);
+            // handleUploadImage(dataUrl);
+
+            const img = new Image();
+
+            img.onload = function () {
+              const width = img.width;
+              const height = img.height;
+              handleUploadImage(dataUrl, width, height);
+            };
+
+            img.src = dataUrl;
           };
           reader.readAsDataURL(e.target.files[0]);
         }}

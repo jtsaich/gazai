@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { Stage, Layer, Line, Image } from 'react-konva';
+import React, { useState, useRef, useEffect } from 'react';
+import { Stage, Layer, Line, Image, Transformer } from 'react-konva';
 import Konva from 'konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import useImage from 'use-image';
 import { create } from 'zustand';
+import { v4 as uuidv4 } from 'uuid';
 
 import { Tool } from './drawing-toolbox';
 
@@ -14,7 +15,7 @@ interface DrawingCanvasState {
   color: string;
   strokeWidth: number;
   inputImage: string;
-  stage?: typeof Stage;
+  stage?: Konva.Stage;
   history: CanvasState[][];
   historyStep: number;
   currentState: CanvasState[];
@@ -25,12 +26,12 @@ interface DrawingCanvasAction {
   setColor: (newColor: string) => void;
   setStrokeWidth: (newStrokeWidth: number) => void;
   setInputImage: (newInputImage: string) => void;
-  setStage: (newStage: typeof Stage) => void;
+  setStage: (newStage: Konva.Stage) => void;
   setHistory: (newHistory: CanvasState[][]) => void;
   setHistoryStep: (newHistoryStep: number) => void;
   setCurrentState: (newCurrentState: CanvasState[]) => void;
 
-  handleUploadImage: (dataUrl: string) => void;
+  handleUploadImage: (dataUrl: string, width?: number, height?: number) => void;
   handleUndo: () => void;
   handleRedo: () => void;
   handleClear: () => void;
@@ -56,8 +57,13 @@ export const useDrawingCanvasStore = create<
     set((state) => {
       const newState: CanvasImage[] = [
         {
+          id: uuidv4(),
           tool: Tool.Image,
-          image: newInputImage
+          image: newInputImage,
+          x: 0,
+          y: 0,
+          width: 200,
+          height: 200
         }
       ];
       const newHistoryStep = state.historyStep + 1;
@@ -72,17 +78,22 @@ export const useDrawingCanvasStore = create<
   setHistoryStep: (newHistoryStep) => set({ historyStep: newHistoryStep }),
   setCurrentState: (newCurrentState) => set({ currentState: newCurrentState }),
 
-  handleUploadImage: (dataUrl) =>
+  handleUploadImage: (dataUrl, width, height) =>
     set((state) => {
       const newState: CanvasImage[] = [
         {
+          id: uuidv4(),
           tool: Tool.Image,
-          image: dataUrl
+          image: dataUrl,
+          x: 0,
+          y: 0,
+          width: width || 200,
+          height: height || 200
         }
       ];
       const newHistoryStep = state.historyStep + 1;
       return {
-        history: [...state.history.slice(0, newHistoryStep), newState],
+        history: [...state.history, newState],
         historyStep: newHistoryStep,
         currentState: newState
       };
@@ -134,6 +145,7 @@ export const useDrawingCanvasStore = create<
 }));
 
 interface CanvasLine {
+  id: string;
   tool: Tool.Pen | Tool.Eraser;
   points: number[];
   color: string;
@@ -141,8 +153,13 @@ interface CanvasLine {
 }
 
 interface CanvasImage {
+  id: string;
   tool: Tool.Image;
   image: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 
 type CanvasState = CanvasLine | CanvasImage;
@@ -152,19 +169,89 @@ function isCanvasLine(obj: CanvasState): obj is CanvasLine {
 }
 
 const URLImage = ({
-  image,
-  width,
-  height,
-  draggable = false
-}: {
-  image: string;
-  width: number;
-  height: number;
-  draggable?: boolean;
-}) => {
-  const [img] = useImage(image);
+  alt = '',
+  draggable = false,
+  shapeProps,
+  isSelected,
+  onSelect,
+  onChange
+}: Omit<Konva.ImageConfig, 'image'> & { image: string }) => {
+  const imageRef = useRef();
+  const trRef = useRef<Konva.Transformer>();
+
+  const [img] = useImage(shapeProps.image);
+
+  useEffect(() => {
+    if (trRef.current && isSelected) {
+      // we need to attach transformer manually
+      trRef.current.nodes([imageRef.current as unknown as Konva.Image]);
+      trRef.current.getLayer()?.batchDraw();
+    }
+  }, [isSelected]);
+
   return (
-    <Image image={img} width={width} height={height} draggable={draggable} />
+    <>
+      {
+        <Image
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          ref={imageRef}
+          alt={alt}
+          {...shapeProps}
+          image={img}
+          onClick={onSelect}
+          onTap={onSelect}
+          draggable={draggable}
+          onDragEnd={(e) => {
+            console.log(shapeProps, e.target.x(), e.target.y());
+            onChange({
+              ...shapeProps,
+              x: e.target.x(),
+              y: e.target.y()
+            });
+          }}
+          onTransformEnd={() => {
+            // transformer is changing scale of the node
+            // and NOT its width or height
+            // but in the store we have only width and height
+            // to match the data better we will reset scale on transform end
+            const node = imageRef.current as unknown as Konva.Shape;
+            console.log(node);
+            if (!node) return;
+
+            const scaleX = node.scaleX();
+            const scaleY = node.scaleY();
+
+            // we will reset it back
+            node.scaleX(1);
+            node.scaleY(1);
+            onChange({
+              ...shapeProps,
+              x: node.x(),
+              y: node.y(),
+              // set minimal value
+              width: Math.max(5, node.width() * scaleX),
+              height: Math.max(node.height() * scaleY)
+            });
+          }}
+        />
+      }
+      {isSelected && (
+        <Transformer
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          ref={trRef}
+          flipEnabled={false}
+          boundBoxFunc={(oldBox, newBox) => {
+            // limit resize
+            if (Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5) {
+              return oldBox;
+            }
+            return newBox;
+          }}
+        />
+      )}
+    </>
   );
 };
 
@@ -173,6 +260,7 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   const color = useDrawingCanvasStore((state) => state.color);
   const strokeWidth = useDrawingCanvasStore((state) => state.strokeWidth);
   const currentState = useDrawingCanvasStore((state) => state.currentState);
+  const [selectedId, selectShape] = useState<string>();
 
   const setCurrentState = useDrawingCanvasStore(
     (state) => state.setCurrentState
@@ -182,7 +270,7 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   );
 
   const containerDivRef = useRef<HTMLDivElement>(null);
-  const stageRef = useRef<Konva.Node>(null);
+  const stageRef = useRef<Konva.Stage>(null);
   const [stageSize, setStageSize] = useState({ width: 1, height: 1 });
 
   const isDrawing = useRef(false);
@@ -211,7 +299,7 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
 
   // get current state via history
   useEffect(() => {
-    if (!stageRef.current) return;
+    if (!stageRef?.current) return;
 
     if (currentState.length === 0) {
       return;
@@ -221,7 +309,19 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
     onChange?.(uri);
   }, [stageRef, currentState]);
 
+  const checkDeselect = (e: KonvaEventObject<MouseEvent | TouchEvent>) => {
+    // deselect when clicked on empty area
+    const clickedOnEmpty = e.target === e.target.getStage();
+    if (clickedOnEmpty) {
+      selectShape(undefined);
+    }
+  };
+
   const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+    if (tool === Tool.Move) {
+      checkDeselect(e);
+      return;
+    }
     if (tool === Tool.Pen || tool === Tool.Eraser) {
       isDrawing.current = true;
       const pos = e.target.getStage()?.getPointerPosition();
@@ -230,7 +330,7 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
       setCurrentState([
         ...currentState,
         {
-          nodeId: e.target._id,
+          id: String(e.target._id),
           tool,
           points: [pos.x, pos.y],
           color: color,
@@ -261,6 +361,11 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   };
 
   const handleMouseUp = () => {
+    // no drawing - skipping
+    if (!isDrawing.current) {
+      return;
+    }
+
     isDrawing.current = false;
     incrementHistoryWithCurrentState();
   };
@@ -276,6 +381,7 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
         onMouseDown={handleMouseDown}
         onMousemove={handleMouseMove}
         onMouseup={handleMouseUp}
+        onTouchStart={checkDeselect}
       >
         <Layer>
           {currentState.map((node, i) => {
@@ -301,28 +407,24 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
                   <URLImage
                     key={i}
                     image={node.image}
-                    width={stageSize.width}
-                    height={stageSize.height}
+                    shapeProps={node}
                     draggable={tool === Tool.Move}
+                    isSelected={node.id === selectedId}
+                    onSelect={() => {
+                      selectShape(node.id);
+                    }}
+                    onChange={(newAttrs: CanvasState) => {
+                      const nodes = currentState.slice();
+                      nodes[i] = newAttrs;
+                      setCurrentState(nodes);
+                      incrementHistoryWithCurrentState();
+                    }}
                   />
                 );
               default:
                 return;
             }
           })}
-          {/* {isSelected && (
-            <Transformer
-              ref={trRef}
-              flipEnabled={false}
-              boundBoxFunc={(oldBox, newBox) => {
-                // limit resize
-                if (Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5) {
-                  return oldBox;
-                }
-                return newBox;
-              }}
-            />
-          )} */}
         </Layer>
       </Stage>
     </div>
