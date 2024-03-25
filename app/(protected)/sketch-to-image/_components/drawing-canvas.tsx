@@ -186,7 +186,6 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   const [stageSize, setStageSize] = useState({ width: 1, height: 1 });
 
   const isDrawing = useRef(false);
-  const isDragging = useRef(false);
 
   // handle window resize
   useEffect(() => {
@@ -311,6 +310,19 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
                 return;
             }
           })}
+          {/* {isSelected && (
+            <Transformer
+              ref={trRef}
+              flipEnabled={false}
+              boundBoxFunc={(oldBox, newBox) => {
+                // limit resize
+                if (Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5) {
+                  return oldBox;
+                }
+                return newBox;
+              }}
+            />
+          )} */}
         </Layer>
       </Stage>
     </div>

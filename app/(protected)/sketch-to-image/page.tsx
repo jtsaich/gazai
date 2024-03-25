@@ -174,7 +174,7 @@ export default function SketchToImage() {
               />
               <div className="relative w-full h-full">
                 {isGenerating ? (
-                  <div className="absolute w-full h-full flex items-center justify-center">
+                  <div className="absolute w-full h-full flex items-end justify-end p-4">
                     <Spinner />
                   </div>
                 ) : null}
@@ -185,8 +185,8 @@ export default function SketchToImage() {
               </div>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-x-4 pb-4">
-              <div className="flex-1 flex flex-row gap-x-4">
+            <div className="flex flex-col lg:flex-row gap-4 pb-4">
+              <div className="flex flex-row gap-x-4">
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button type="button" size="icon" variant="secondary">
@@ -242,7 +242,7 @@ export default function SketchToImage() {
                   render={({ field }) => (
                     <FormItemInput
                       label="Prompt"
-                      className="flex-1 w-full max-w-md"
+                      className="flex-1 min-w-96"
                       {...field}
                     />
                   )}
