@@ -211,6 +211,7 @@ export default function SketchToImage() {
                       name="loraSelections"
                       render={({ field }) => (
                         <ModelSelect
+                          label="Models"
                           value={field.value}
                           onChange={field.onChange}
                         />

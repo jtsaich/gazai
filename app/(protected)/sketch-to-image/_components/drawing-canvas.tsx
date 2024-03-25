@@ -287,6 +287,8 @@ const URLImage = ({
   );
 };
 
+const origStageSize = { width: 512, height: 512 };
+
 function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   const tool = useDrawingCanvasStore((state) => state.tool);
   const color = useDrawingCanvasStore((state) => state.color);
@@ -306,7 +308,7 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
 
   const containerDivRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<Konva.Stage>(null);
-  const [stageSize, setStageSize] = useState({ width: 1, height: 1 });
+  const [stageSize, setStageSize] = useState(origStageSize);
 
   useHotkeys('delete', () => {
     if (selectedId) {
@@ -323,6 +325,13 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   // handle window resize
   useEffect(() => {
     if (!containerDivRef.current) return;
+    const parentWidth = containerDivRef.current.clientWidth;
+    const parentHeight = containerDivRef.current.clientHeight;
+    stageRef.current?.scale({
+      x: parentWidth / origStageSize.width,
+      y: parentHeight / origStageSize.height
+    });
+
     setStageSize({
       width: containerDivRef.current.clientWidth,
       height: containerDivRef.current.clientWidth
@@ -330,6 +339,12 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
 
     const handleResize = () => {
       if (!containerDivRef.current) return;
+      const parentWidth = containerDivRef.current.clientWidth;
+      const parentHeight = containerDivRef.current.clientHeight;
+      stageRef.current?.scale({
+        x: parentWidth / origStageSize.width,
+        y: parentHeight / origStageSize.height
+      });
       setStageSize({
         width: containerDivRef.current.clientWidth,
         height: containerDivRef.current.clientWidth
@@ -373,7 +388,7 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
     }
     if (tool === Tool.Pen || tool === Tool.Eraser) {
       isDrawing.current = true;
-      const pos = e.target.getStage()?.getPointerPosition();
+      const pos = e.target.getStage()?.getRelativePointerPosition();
       if (!pos) return;
 
       setCurrentState([
@@ -395,7 +410,7 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
       return;
     }
     const stage = e.target.getStage();
-    const point = stage?.getPointerPosition();
+    const point = stage?.getRelativePointerPosition();
     if (!point) return;
 
     const lastLine = currentState[currentState.length - 1];
