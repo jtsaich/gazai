@@ -47,7 +47,7 @@ export default async function ProtectedLayout({
                   <Menu /> Gazai
                 </div>
               </SheetTrigger>
-              <SheetContent side="left">
+              <SheetContent side="left" className="min-w-[200px]">
                 <SheetHeader>
                   <SheetTitle>Gazai</SheetTitle>
                   <SheetDescription>

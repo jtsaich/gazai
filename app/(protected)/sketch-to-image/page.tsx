@@ -242,13 +242,13 @@ export default function SketchToImage() {
                   render={({ field }) => (
                     <FormItemInput
                       label="Prompt"
-                      className="flex-1 min-w-96"
+                      className="flex-1 lg:min-w-96"
                       {...field}
                     />
                   )}
                 />
               </div>
-              <div className="flex flex-row gap-x-4">
+              <div className="flex flex-row flex-wrap gap-x-4">
                 <FormField
                   control={form.control}
                   name="cfgScale"

@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+
 import LoginForm from '@/components/auth/login-form';
 
 export const metadata = {
@@ -10,7 +12,9 @@ export default function LoginPage() {
       <div className="container h-[800px] flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0 bg-base-100 overflow-hidden rounded-lg border bg-background shadow-md md:shadow-xl">
         <figure className="hidden h-full flex-col lg:flex dark:border-r bg-base-200"></figure>
         <div className="lg:p-8">
-          <LoginForm />
+          <Suspense fallback={<div>Loading...</div>}>
+            <LoginForm />
+          </Suspense>
         </div>
       </div>
     </main>

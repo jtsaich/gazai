@@ -7,7 +7,7 @@
     "start": "next start",
     "lint": "next lint",
     "db:push": "dotenv -e .env.development.local -- npx prisma db push",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate --no-engine"
   },
   "dependencies": {
     "@auth/core": "0.26.3",
