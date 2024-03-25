@@ -34,7 +34,7 @@ interface DrawingCanvasAction {
   setCurrentState: (newCurrentState: CanvasState[]) => void;
   selectShape: (id?: string) => void;
 
-  handleUploadImage: (dataUrl: string, width?: number, height?: number) => void;
+  handleUploadImage: (dataUrl: string, width: number, height: number) => void;
   handleUndo: () => void;
   handleRedo: () => void;
   handleClear: () => void;
@@ -66,8 +66,8 @@ export const useDrawingCanvasStore = create<
           image: newInputImage,
           x: 0,
           y: 0,
-          width: 200,
-          height: 200
+          width: state.stage?.width() || 200,
+          height: state.stage?.height() || 200
         }
       ];
       const newHistoryStep = state.historyStep + 1;
@@ -85,15 +85,44 @@ export const useDrawingCanvasStore = create<
 
   handleUploadImage: (dataUrl, width, height) =>
     set((state) => {
-      const newState: CanvasImage[] = [
+      const stageWidth = state.stage?.width();
+      const stageHeight = state.stage?.height();
+
+      let _width = width;
+      let _height = height;
+
+      const scale = width / height;
+      if (
+        stageWidth &&
+        width > stageWidth &&
+        stageHeight &&
+        height > stageHeight
+      ) {
+        if (scale > 1) {
+          _width = stageWidth;
+          _height = _width / scale;
+        } else {
+          _height = stageHeight;
+          _width = _height * scale;
+        }
+      } else if (stageWidth && width > stageWidth) {
+        _width = stageWidth;
+        _height = _width / scale;
+      } else if (stageHeight && height > stageHeight) {
+        _height = stageHeight;
+        _width = _height * scale;
+      }
+
+      const newState: CanvasState[] = [
+        ...state.currentState,
         {
           id: uuidv4(),
           tool: Tool.Image,
           image: dataUrl,
           x: 0,
           y: 0,
-          width: width || 200,
-          height: height || 200
+          width: _width,
+          height: _height
         }
       ];
       const newHistoryStep = state.historyStep + 1;
@@ -206,9 +235,8 @@ const URLImage = ({
           image={img}
           onClick={onSelect}
           onTap={onSelect}
-          draggable={draggable}
+          draggable={draggable && isSelected}
           onDragEnd={(e) => {
-            console.log(shapeProps, e.target.x(), e.target.y());
             onChange({
               ...shapeProps,
               x: e.target.x(),
@@ -221,7 +249,6 @@ const URLImage = ({
             // but in the store we have only width and height
             // to match the data better we will reset scale on transform end
             const node = imageRef.current as unknown as Konva.Shape;
-            console.log(node);
             if (!node) return;
 
             const scaleX = node.scaleX();
@@ -267,6 +294,7 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   const currentState = useDrawingCanvasStore((state) => state.currentState);
   const selectedId = useDrawingCanvasStore((state) => state.selectedId);
 
+  const setStage = useDrawingCanvasStore((state) => state.setStage);
   const selectShape = useDrawingCanvasStore((state) => state.selectShape);
 
   const setCurrentState = useDrawingCanvasStore(
@@ -281,7 +309,6 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   const [stageSize, setStageSize] = useState({ width: 1, height: 1 });
 
   useHotkeys('delete', () => {
-    console.debug('Delete pressed');
     if (selectedId) {
       const index = currentState.findIndex((node) => node.id === selectedId);
       const nodes = [...currentState];
@@ -315,7 +342,11 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
     };
   }, [containerDivRef]);
 
-  // get current state via history
+  useEffect(() => {
+    if (!stageRef?.current) return;
+    setStage(stageRef?.current);
+  }, [stageRef]);
+
   useEffect(() => {
     if (!stageRef?.current) return;
 
