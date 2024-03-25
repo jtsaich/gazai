@@ -223,7 +223,6 @@ export default function SketchToImage() {
                   name="inference"
                   render={({ field }) => (
                     <FormItemSelect
-                      label="推論モード"
                       options={[
                         { label: 'i2i', value: 'i2i' },
                         { label: 't2i-scribble', value: 't2i-scribble' },
@@ -240,11 +239,7 @@ export default function SketchToImage() {
                   control={form.control}
                   name="prompt"
                   render={({ field }) => (
-                    <FormItemInput
-                      label="Prompt"
-                      className="flex-1 lg:min-w-96"
-                      {...field}
-                    />
+                    <FormItemInput className="flex-1 lg:min-w-96" {...field} />
                   )}
                 />
               </div>

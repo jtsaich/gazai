@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { Stage, Layer, Line, Image, Transformer } from 'react-konva';
 import Konva from 'konva';
 import { KonvaEventObject } from 'konva/lib/Node';
@@ -19,6 +20,7 @@ interface DrawingCanvasState {
   history: CanvasState[][];
   historyStep: number;
   currentState: CanvasState[];
+  selectedId?: string;
 }
 
 interface DrawingCanvasAction {
@@ -30,6 +32,7 @@ interface DrawingCanvasAction {
   setHistory: (newHistory: CanvasState[][]) => void;
   setHistoryStep: (newHistoryStep: number) => void;
   setCurrentState: (newCurrentState: CanvasState[]) => void;
+  selectShape: (id?: string) => void;
 
   handleUploadImage: (dataUrl: string, width?: number, height?: number) => void;
   handleUndo: () => void;
@@ -50,6 +53,7 @@ export const useDrawingCanvasStore = create<
   history: [[]],
   historyStep: 0,
   currentState: [],
+  selectedId: undefined,
   setTool: (newTool) => set({ tool: newTool }),
   setColor: (newColor) => set({ color: newColor }),
   setStrokeWidth: (newStrokeWidth) => set({ strokeWidth: newStrokeWidth }),
@@ -77,6 +81,7 @@ export const useDrawingCanvasStore = create<
   setHistory: (newHistory) => set({ history: newHistory }),
   setHistoryStep: (newHistoryStep) => set({ historyStep: newHistoryStep }),
   setCurrentState: (newCurrentState) => set({ currentState: newCurrentState }),
+  selectShape: (id) => set({ selectedId: id }),
 
   handleUploadImage: (dataUrl, width, height) =>
     set((state) => {
@@ -260,7 +265,9 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   const color = useDrawingCanvasStore((state) => state.color);
   const strokeWidth = useDrawingCanvasStore((state) => state.strokeWidth);
   const currentState = useDrawingCanvasStore((state) => state.currentState);
-  const [selectedId, selectShape] = useState<string>();
+  const selectedId = useDrawingCanvasStore((state) => state.selectedId);
+
+  const selectShape = useDrawingCanvasStore((state) => state.selectShape);
 
   const setCurrentState = useDrawingCanvasStore(
     (state) => state.setCurrentState
@@ -272,6 +279,17 @@ function DrawingCanvas({ onChange }: { onChange?: (dataUrl: string) => void }) {
   const containerDivRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<Konva.Stage>(null);
   const [stageSize, setStageSize] = useState({ width: 1, height: 1 });
+
+  useHotkeys('delete', () => {
+    console.debug('Delete pressed');
+    if (selectedId) {
+      const index = currentState.findIndex((node) => node.id === selectedId);
+      const nodes = [...currentState];
+      nodes.splice(index, 1);
+      setCurrentState(nodes);
+      incrementHistoryWithCurrentState();
+    }
+  });
 
   const isDrawing = useRef(false);
 
