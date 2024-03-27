@@ -62,7 +62,7 @@ export default function SketchToImage() {
       inference: 'i2i',
       cfgScale: 7,
       denoisingStrength: 0.75,
-      loraSelections: [LoRAs[0], LoRAs[1]]
+      loraSelections: []
     },
     resolver: zodResolver(SketchToImageSchema)
   });
@@ -145,6 +145,101 @@ export default function SketchToImage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="h-full">
           <main className="flex flex-col h-full w-full px-12 py-10">
+            <div className="flex flex-col lg:flex-row gap-4 pb-4">
+              <div className="flex flex-row gap-x-4">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button type="button" size="icon" variant="secondary">
+                      <SlidersVertical />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    side="top"
+                    align="start"
+                    className="w-96 space-y-4"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="negativePrompt"
+                      render={({ field }) => (
+                        <FormItemTextarea label="Negative prompt" {...field} />
+                      )}
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormField
+                  control={form.control}
+                  name="inference"
+                  render={({ field }) => (
+                    <FormItemSelect
+                      options={[
+                        { label: 'i2i', value: 'i2i' },
+                        { label: 't2i-scribble', value: 't2i-scribble' },
+                        { label: 'coloring', value: 'coloring' }
+                      ]}
+                      value={String(field.value)}
+                      onChange={field.onChange}
+                      className="max-w-xs"
+                    />
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="prompt"
+                  render={({ field }) => (
+                    <FormItemInput
+                      className="flex-1 lg:min-w-96"
+                      placeholder="Enter a prompt"
+                      {...field}
+                    />
+                  )}
+                />
+              </div>
+              <div className="flex flex-row flex-wrap gap-x-4">
+                <FormField
+                  control={form.control}
+                  name="loraSelections"
+                  render={({ field }) => (
+                    <ModelSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                      className="min-w-36"
+                    />
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="cfgScale"
+                  render={({ field }) => (
+                    <Range
+                      label="cfg"
+                      value={field.value}
+                      onChange={field.onChange}
+                      min={0}
+                      max={20}
+                      className="w-40"
+                    />
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="denoisingStrength"
+                  render={({ field }) => (
+                    <Range
+                      label="ノイズ除去の強さ"
+                      value={field.value}
+                      onChange={field.onChange}
+                      min={0.1}
+                      max={1.0}
+                      step={0.05}
+                      className="w-40"
+                    />
+                  )}
+                />
+              </div>
+            </div>
             <div className="grid md:grid-cols-2 text-center pb-4">
               <div></div>
               <div>
@@ -181,99 +276,6 @@ export default function SketchToImage() {
                 <img
                   src={outputImage}
                   className="w-full h-full aspect-square"
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-col lg:flex-row gap-4 pb-4">
-              <div className="flex flex-row gap-x-4">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button type="button" size="icon" variant="secondary">
-                      <SlidersVertical />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    side="top"
-                    align="start"
-                    className="w-96 space-y-4"
-                  >
-                    <FormField
-                      control={form.control}
-                      name="negativePrompt"
-                      render={({ field }) => (
-                        <FormItemTextarea label="Negative prompt" {...field} />
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="loraSelections"
-                      render={({ field }) => (
-                        <ModelSelect
-                          label="Models"
-                          value={field.value}
-                          onChange={field.onChange}
-                        />
-                      )}
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormField
-                  control={form.control}
-                  name="inference"
-                  render={({ field }) => (
-                    <FormItemSelect
-                      options={[
-                        { label: 'i2i', value: 'i2i' },
-                        { label: 't2i-scribble', value: 't2i-scribble' },
-                        { label: 'coloring', value: 'coloring' }
-                      ]}
-                      value={String(field.value)}
-                      onChange={field.onChange}
-                      className="max-w-xs"
-                    />
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="prompt"
-                  render={({ field }) => (
-                    <FormItemInput className="flex-1 lg:min-w-96" {...field} />
-                  )}
-                />
-              </div>
-              <div className="flex flex-row flex-wrap gap-x-4">
-                <FormField
-                  control={form.control}
-                  name="cfgScale"
-                  render={({ field }) => (
-                    <Range
-                      label="cfg"
-                      value={field.value}
-                      onChange={field.onChange}
-                      min={0}
-                      max={20}
-                      className="w-40"
-                    />
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="denoisingStrength"
-                  render={({ field }) => (
-                    <Range
-                      label="ノイズ除去の強さ"
-                      value={field.value}
-                      onChange={field.onChange}
-                      min={0.1}
-                      max={1.0}
-                      step={0.05}
-                      className="w-40"
-                    />
-                  )}
                 />
               </div>
             </div>
